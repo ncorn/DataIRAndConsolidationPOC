@@ -1,0 +1,389 @@
+<html>
+    <head>
+        <style>
+            #tblOutput, #tblConsolIndv, #tblConsolIndv tr, .dataOutput{
+                border-collapse: collapse;
+                border: solid 1px #000000;
+                margin-bottom: 20px;
+            }
+
+            #tblConsolIndv td{
+                padding: 10px;
+            }
+
+            .rowHeader{
+                border: solid 1px #000000;
+            }
+
+            .cellHeader{
+                padding: 10px;
+                border: solid 0px #000000;
+            }
+
+            .cellData{
+                padding: 10px;
+                border: solid 0px #000000;
+            }
+
+            .rowConsol{
+                border: solid 1px #000000;
+            }
+
+            .cellConsol{
+                padding: 10px;
+                border: solid 0px #000000;
+            }
+            
+            .outContainer {
+                margin-bottom: 20px;
+            }
+        </style>
+
+        <script lang="javascript">
+            var scenarios = [];
+            var defaultScenario = 4;
+
+            var colors = [
+                'ffdbd9',
+                'ffeed9',
+                'feffd9',
+                'd9ffda',
+                'd9feff',
+                'dbd9ff',
+                'f2d9ff',
+                'ffd9f7',
+                'ffd9da'
+            ];
+        </script>
+        <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+        
+        <script src="Scenario-MultipleEmails.js"></script>
+        <script src="Scenario-SharedFamilyEmail.js"></script>
+        <script src="Scenario-NameChange.js"></script>
+        <script src="Scenario-EmailChange.js"></script>
+        <script src="Scenario-MultipleContacts.js"></script>
+        <script src="Scenario-MultipleLeads.js"></script>
+        <script lang="javascript"></script>
+    </head>
+    <body>
+        <div>
+            <select id="selScenario"></select>
+        </div>
+        <h1>Raw Individuals</h1>
+        <div class="outContainer" id="outRawData"></div>
+        <h1 style="display: none;">Match Key Sorted Individuals</h1>
+        <div style="display: none;" class="outContainer" id="outSortedData"></div>
+        <h1>Clustered Individuals</h1>
+        <div class="outContainer" id="outGroupedData"></div>
+        <h1>Consolidated Individuals</h1>
+        <div class="outContainer" id="outConsolidatedData"></div>
+    </body>
+    <script lang="javascript">
+        var scenarioDD = $('#selScenario');
+        
+        for(var idx in scenarios)
+        {
+            var curScenario = scenarios[idx];
+            var curTitlte = curScenario.title ?? idx;
+
+            scenarioDD.append('<option value="' + idx + '">' + curTitlte + '</option>');
+        }
+        
+        scenarioDD.change(function()
+        {
+            clear();
+            output(scenarios[this.value]);
+        });
+
+        function clear(){
+            var clearIDs = ['outRawData', 'outSortedData', 'outGroupedData', 'outConsolidatedData'];
+
+            for(var idx in clearIDs)
+            {
+                $('#' + clearIDs[idx]).empty();
+            }
+        };
+
+        function output(curScenario)
+        {
+            // Display Data
+            CreateTableFromArray(curScenario.data, 'outRawData');
+
+            // sort data on match key
+            var sortedRawData = curScenario.data.map((x) => x);
+            
+            sortedRawData.sort(function(a,b){
+                var valA = a[curScenario.matchKey];
+                var valB = b[curScenario.matchKey];
+
+                if(valA>valB)
+                {
+                    return 1;
+                }
+
+                if(valA<valB)
+                {
+                    return -1;
+                }
+
+                    return 0;
+            });
+
+            CreateTableFromArray(sortedRawData, 'outSortedData', false);
+
+            // break data apart by match key
+            var groupedRecoreds = [];
+            var isFirst = true;
+            var prevValue;
+            var curGroup = new Array();
+            groupedRecoreds.push(curGroup);
+
+            for(var idx in sortedRawData)
+            {
+                if(isFirst)
+                {
+                    prevValue = sortedRawData[idx][curScenario.matchKey];
+                    isFirst = false;
+                }
+
+                var curRow = sortedRawData[idx];
+                var curValue = curRow[curScenario.matchKey];
+
+                if(curValue !== prevValue)
+                {
+                    curGroup = new Array();
+                    groupedRecoreds.push(curGroup);
+                }
+
+                curGroup.push(curRow);
+
+                var prevValue = curValue;
+            }
+
+            var unifiedIndividuals = [];
+
+            for(var idx in groupedRecoreds)
+            {
+                var data = groupedRecoreds[idx];
+
+                data.sort(function(a,b){
+                    var typeRanking = {
+                        Contact: 0,
+                        Lead: 1
+                    };
+
+                    var rankA = typeRanking[a.object_type];
+                    var rankB = typeRanking[b.object_type];
+
+                    if(rankA > rankB)
+                    {
+                        return 1;
+                    }
+
+                    if(rankA < rankB)
+                    {
+                        return -1;
+                    }
+
+                    if(rankA == rankB)
+                    {
+                        if(a.last_updated > b.last_updated)
+                        {
+                            return -1;
+                        }
+
+                        if(b.last_updated > a.last_updated)
+                        {
+                            return 1;
+                        }
+                    }
+
+                    return 0;
+                })
+
+                var consolidated = ConsolidateData(data, 'Consolidate');
+                unifiedIndividuals.push(consolidated);
+                data.push(consolidated);
+
+                CreateTableFromArray(data, 'outGroupedData', true);
+            }
+
+            CreateTableFromArray(unifiedIndividuals, 'outConsolidatedData', true);
+        }
+
+
+        function ConsolidateData(arrayData, mode)
+        {
+            var masterObj = getCompleteProperties(arrayData);
+            var retObj = { colorMap: {}, isUnifiedIndv: true };
+
+            if(mode == 'Consolidate')
+            {
+                // loop through each property
+                for(var masterKey in masterObj)
+                {
+                    retObj[masterKey] = null;
+
+                    // find the first available value
+                    for(var idx in arrayData)
+                    {
+                        var curRow = arrayData[idx];
+                        var curVal = curRow[masterKey];
+                        var curColor = curRow.color;
+
+                        if(curVal != undefined && curVal !=null)
+                        {
+                            retObj[masterKey] = curVal;
+                            retObj.colorMap[masterKey] = curColor;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return retObj;
+        }            
+
+        function CreateTableFromArray(arrayData, outContainerID, append)
+        {
+            var excludedKeys = [ 'color', 'colorMap', 'isUnifiedIndv' ];
+            var data = arrayData;
+            var masterObj = getCompleteProperties(arrayData);
+            var outTable = $('<table class="dataOutput"></table>');
+
+            var outContainer = $('#' + outContainerID);
+
+            if(!append)
+            {
+                outContainer.empty();
+            }
+
+            outContainer.append(outTable);
+
+            // collect all properties
+            for(var i = 0; i < data.length; i++)
+            {
+                var curObj = data[i];
+
+
+                for(var key in curObj)
+                {
+                    if(masterObj[key] === undefined || masterObj[key] == null)
+                    {
+                        masterObj[key] = [];
+                    }
+
+                    var curVal = curObj[key];
+                    var curColor = curObj.color;
+
+                    if(curVal !== undefined && curVal !== null)
+                    {
+                        masterObj[key].push({ color: curColor, val: curVal });
+                    }
+                }
+            }
+
+            // output the headers
+            var rowHeader = $('<tr class="rowHeader"></tr>');// outputTable.append('<th></th>');
+            outTable.append(rowHeader);
+            rowHeader.append('<th class="cellHeader">Rank</th>');
+
+            for(var masterKey in masterObj)
+            {
+                if(!excludedKeys.includes(masterKey))
+                {
+                    //console.log('MK: ' + masterKey);
+                    var col = rowHeader.append('<th class="cellHeader">' + masterKey + '</th>');
+                }
+            }
+
+            // output data
+            for(var dataKey in data)
+            {
+                var curData = data[dataKey];
+                var curColor = curData.color;
+                var rank = dataKey;
+
+                var row = $('<tr></tr>');
+
+                if(curData.isUnifiedIndv)
+                {
+                    row = $('<tr class="rowConsol"></tr>');
+                    rank = '';
+                }
+
+                outTable.append(row);
+                row.append('<td class="cellData" style="background-color: #' + curColor + '">' + rank + '</td>');
+
+                for(var masterKey in masterObj)
+                {
+                    if(!excludedKeys.includes(masterKey))
+                    {
+                        var curVal = curData[masterKey];
+
+                        if(curVal === undefined)
+                        {
+                            curColor = 'efefef';
+                        }
+
+                        if(curData.colorMap)
+                        {
+                            curColor = curData.colorMap[masterKey] ?? curColor;
+                        }
+
+                        //console.log(key);
+                        //console.log(curVal);
+
+                        if(Array.isArray(curVal))
+                        {
+                            var list = $('<td class="cellData" style="background-color: #' + curColor + '"><ul></ul></td>');
+
+
+                            for(var idx in curVal)
+                            {
+                                var curItem = curVal[idx]
+
+                                if(typeof curItem === 'object')
+                                {
+                                    curItem = JSON.stringify(curItem);
+                                }
+
+                                list.append('<li>' + curItem + '</li>');
+                            }
+
+                            row.append(list);
+                        }
+                        else
+                        {
+                            var col = row.append('<td class="cellData" style="background-color: #' + curColor + '">' + curVal + '</td>');
+                        }
+                    }
+                }
+            }
+        }
+
+        function getCompleteProperties(arrayData)
+        {
+            var masterObj = {};
+            data = arrayData;
+
+            // collect all properties
+            for(var i = 0; i < data.length; i++)
+            {
+                var curObj = data[i];
+
+                for(var key in curObj)
+                {
+                    if(masterObj[key] === undefined)
+                    {
+                        masterObj[key] = null;
+                    }
+                }
+            }
+
+            return masterObj;
+        }
+
+        output(scenarios[defaultScenario]);
+    </script>
+</html>

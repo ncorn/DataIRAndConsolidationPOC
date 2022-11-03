@@ -1,0 +1,46 @@
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    
+        <script lang="javascript"></script>
+    </head>
+    <body>
+        <table>
+            
+        </table>
+    </body>
+    <script lang="javascript">
+        var data = [
+            {
+                rank: 0,
+                color: 'efefef',
+
+                id:'',
+                DOB: '',
+                email: '',
+                phone: '',
+                address: '',
+                age: 0,
+                accountBalance: 0,
+                interests:[ '' ],
+                purchaseHistory:[
+                    {}
+                ],
+                medicalHistory:[
+                    {}
+                ]
+            }
+        ];
+
+        var masterObj = {};
+
+        for(var i = 0; i < data.length; i++)
+        {
+            for(var key in data[i])
+            {
+                masterObj[key] = null;
+                console.log(key);
+            }
+        }
+    </script>
+</html>
