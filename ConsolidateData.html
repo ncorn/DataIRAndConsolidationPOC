@@ -82,6 +82,7 @@
                 <option value="start">Start</option>
                 <option value="finish">Finish</option>
             </select>
+            <select id="selStepStart"></select>
         </div>
         <h1>Raw Individuals</h1>
         <div class="outContainer" id="outRawData"></div>
@@ -93,7 +94,9 @@
         <div class="outContainer" id="outConsolidatedData"></div>
     </body>
     <script lang="javascript">
-        var currentScenario = scenarios[0];
+        var currentscenarioIdx = 0;
+        var currentScenario = scenarios[currentscenarioIdx];
+        var currentScenarioStartingStep = 0;
         var currentView = 'merged';
         var scenarioDD = $('#selScenario');
         
@@ -102,7 +105,10 @@
             var curScenario = scenarios[idx];
             var curTitlte = curScenario.title ?? idx;
 
-            scenarioDD.append('<option value="' + idx + '">' + curTitlte + '</option>');
+            var option = $('<option value="' + idx + '">' + curTitlte + '</option>');
+            scenarioDD.append(option);
+
+            scenarioDD.val(currentscenarioIdx);
         }
         
         scenarioDD.change(function()
@@ -112,7 +118,8 @@
             if(this.value != '')
             {
                 currentScenario = scenarios[this.value];
-                executePipeline(currentScenario, 0, 1, currentView /*'merged' 'start' 'finish'*/);
+                populateStepDDByScenario(currentScenario);
+                executePipeline(currentScenario, currentScenarioStartingStep, currentScenarioStartingStep + 1, currentView /*'merged' 'start' 'finish'*/);
             }
         });
 
@@ -122,8 +129,33 @@
             currentView = this.value;
 
             clear();
-            executePipeline(currentScenario, 0, 1, currentView /*'merged' 'start' 'finish'*/);
+            executePipeline(currentScenario, currentScenarioStartingStep, currentScenarioStartingStep + 1, currentView /*'merged' 'start' 'finish'*/);
         });
+
+        var stepDD = $('#selStepStart');
+
+        stepDD.change(function(){
+            currentScenarioStartingStep = Number.parseInt(this.value);
+
+            clear();
+            executePipeline(currentScenario, currentScenarioStartingStep, currentScenarioStartingStep + 1, currentView /*'merged' 'start' 'finish'*/);
+        });
+
+        function refresh()
+        {
+            populateStepDDByScenario(currentScenario);
+            executePipeline(currentScenario, currentScenarioStartingStep, currentScenarioStartingStep + 1, currentView /*'merged' 'start' 'finish'*/);
+        }
+
+        function populateStepDDByScenario(scenario)
+        {
+            stepDD.empty();
+            
+            for(var i = 0; i < scenario.data.length - 1; i++)
+            {
+                stepDD.append('<option value="' + i + '">' + (i+1) + '</option>');
+            }
+        }
 
         function clear(){
             var clearIDs = ['outRawData', 'outSortedData', 'outGroupedData', 'outConsolidatedData'];
@@ -830,8 +862,6 @@
             }
         }
 
-        executePipeline(curScenario, 0, 1, currentView /*'merged' 'start' 'finish'*/);
-
-        var test = 'test';
+        refresh();
     </script>
 </html>
