@@ -64,9 +64,10 @@
         
         <script src="Scenario-MultipleLeads.js"></script>
         <script src="Scenario-SharedFamilyEmail.js"></script>
+        <script src="Scenario-MultipleContacts.js"></script>
 
         <!--
-        <script src="Scenario-MultipleContacts.js"></script>
+        
         <script src="Scenario-MultipleEmails.js"></script>
         <script src="Scenario-NameChange.js"></script>
         <script src="Scenario-EmailChange.js"></script>
@@ -173,35 +174,9 @@
 
         function dataCalculateDeltas(objGroupA, objGroupB, compareKey)
         {
-            /*
-            var idsA = indivGroupA.map(x => x[compareKey]);
-            var idsB = indivGroupB.map(x => x[compareKey]);
-
-            var idsARemoved = [];
-            var idsAAdded = [];
-            var idsAMatched = [];
-            var idsBRemoved = [];
-            var idsARemoved = [];
-            var idsBMatched = [];
-            */
-
-            objGroupA.sort((a,b) => {
-                var valA = a[compareKey];
-                var valB = b[compareKey];
-
-                if(valA > valB)
-                {
-                    return 1;
-                }
-
-                if(valB > valA)
-                {
-                    return -1;
-                }
-
-                return 0;
-            });
-            objGroupB.sort();
+            var sortConfig = [{ key: compareKey, direction: 'asc'}]
+            dataSortObjArrayByKeys(objGroupA, sortConfig);
+            dataSortObjArrayByKeys(objGroupA, sortConfig);
 
             var idxB = 0;
             var isFirstB = true;
@@ -248,7 +223,7 @@
             }
         }
 
-        const hashString = function(str, seed = 0) {
+        function hashString(str, seed = 0) {
             let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
             for (let i = 0, ch; i < str.length; i++) {
                 ch = str.charCodeAt(i);
@@ -376,6 +351,7 @@
 
         function ConsolidateData(arrayData, mode)
         {
+            dataSortObjArrayByKeys(arrayData, [  { key: 'object_type', direction: 'asc'}, { key: 'last_updated', direction: 'desc'} ]);
             var masterObj = getCompleteProperties(arrayData);
             var retObj = { colorMap: {}, isUnifiedIndv: true };
 
@@ -404,7 +380,50 @@
             }
 
             return retObj;
-        }            
+        }
+
+        function dataSortObjArrayByKeys(objArray, sortKeys)
+        {
+            objArray.sort(function(a, b)
+            {
+                var retSort = 0;
+
+                for(var idx in sortKeys)
+                {
+                    var sortKey = sortKeys[idx].key;
+                    var sortDir = sortKeys[idx].direction;
+
+                    var curSortValA = a[sortKey];
+                    var curSortValB = b[sortKey];
+
+                    if(curSortValA < curSortValB)
+                    {
+                        retSort = -1;
+
+                        if(sortDir == 'desc')
+                        {
+                            retSort = retSort * -1;
+                        }
+
+                        break;
+                    }
+
+                    if(curSortValA > curSortValB)
+                    {
+                        retSort = 1;
+
+                        if(sortDir == 'desc')
+                        {
+                            retSort = retSort * -1;
+                        }
+
+                        break;
+                    }
+                }
+
+                return retSort;
+            });
+        }   
 
         function outputTableFromObjectArray(arrayData, outContainerID, append)
         {
@@ -568,63 +587,68 @@
 
             // compute all the data - cluster data, consolidate data
             var computedDataStart = crteateDataFromScenarioRawData(inputDataStart, matchKey);
-            var computedDataFinish = crteateDataFromScenarioRawData(inputDataFinish, matchKey);
+            var finalData = computedDataStart;
 
-            dataCalculateDeltas(computedDataStart.dataRaw, computedDataFinish.dataRaw, idKeyRaw);
-            dataCalculateDeltas(computedDataStart.dataClusters, computedDataFinish.dataClusters, idKeyClust)
-            dataCalculateDeltas(computedDataStart.dataConsolidatedIndv, computedDataFinish.dataConsolidatedIndv, idKeyConsIndv);
-
-            // calculate deltas for each individual cluster
-            for(var idxA in computedDataStart.dataClusters)
+            if(scenario.data.length > 1)
             {
-                var curClusterA = computedDataStart.dataClusters[idxA];
-                var curClusterAId = curClusterA[idKeyClust];
-                var clusterAMatched = false;
+                var computedDataFinish = crteateDataFromScenarioRawData(inputDataFinish, matchKey);
 
-                for(var idxB in computedDataFinish.dataClusters)
+                dataCalculateDeltas(computedDataStart.dataRaw, computedDataFinish.dataRaw, idKeyRaw);
+                dataCalculateDeltas(computedDataStart.dataClusters, computedDataFinish.dataClusters, idKeyClust)
+                dataCalculateDeltas(computedDataStart.dataConsolidatedIndv, computedDataFinish.dataConsolidatedIndv, idKeyConsIndv);
+
+                // calculate deltas for each individual cluster
+                for(var idxA in computedDataStart.dataClusters)
                 {
-                    var curClusterB = computedDataFinish.dataClusters[idxB];
-                    var curClusterBId = curClusterB[idKeyClust];
+                    var curClusterA = computedDataStart.dataClusters[idxA];
+                    var curClusterAId = curClusterA[idKeyClust];
+                    var clusterAMatched = false;
 
-                    if(curClusterAId == curClusterBId)
+                    for(var idxB in computedDataFinish.dataClusters)
                     {
-                        clusterAMatched = true;
-                        dataCalculateDeltas(curClusterA.individuals, curClusterB.individuals, idKeyRaw);
+                        var curClusterB = computedDataFinish.dataClusters[idxB];
+                        var curClusterBId = curClusterB[idKeyClust];
+
+                        if(curClusterAId == curClusterBId)
+                        {
+                            clusterAMatched = true;
+                            dataCalculateDeltas(curClusterA.individuals, curClusterB.individuals, idKeyRaw);
+                        }
+                    }
+
+                    if(!clusterAMatched)
+                    {
+                        for(var removedIdx in curClusterA.individuals)
+                        {
+                            curClusterA.individuals[removedIdx].delta = 'removed';
+                        }
                     }
                 }
 
-                if(!clusterAMatched)
+                for(var idx in computedDataFinish.dataClusters)
                 {
-                    for(var removedIdx in curClusterA.individuals)
+                    var curClusterFinished = computedDataFinish.dataClusters[idx];
+
+                    if(curClusterFinished.delta == 'added')
                     {
-                        curClusterA.individuals[removedIdx].delta = 'removed';
+                        for(var addIdx in curClusterFinished.individuals)
+                        {
+                            curClusterFinished.individuals[addIdx].delta = 'added';
+                        } 
                     }
                 }
-            }
 
-            for(var idx in computedDataFinish.dataClusters)
-            {
-                var curClusterFinished = computedDataFinish.dataClusters[idx];
+                finalData = computedDataFinish;
 
-                if(curClusterFinished.delta == 'added')
+                if(outputStep == 'start')
                 {
-                    for(var addIdx in curClusterFinished.individuals)
-                    {
-                        curClusterFinished.individuals[addIdx].delta = 'added';
-                    } 
+                    finalData = computedDataStart;
                 }
-            }
 
-            var finalData = computedDataFinish;
-
-            if(outputStep == 'start')
-            {
-                finalData = computedDataStart;
-            }
-
-            if(outputStep == 'merged')
-            {
-                finalData = dataCombineDataIterations(computedDataStart, computedDataFinish, idKeyRaw, idKeyClust, idKeyConsIndv);
+                if(outputStep == 'merged')
+                {
+                    finalData = dataCombineDataIterations(computedDataStart, computedDataFinish, idKeyRaw, idKeyClust, idKeyConsIndv);
+                }
             }
 
             outputTablesForEachDataType(finalData);
@@ -648,7 +672,7 @@
             var tmpClusters = deepClone(dataIterationOne.dataClusters);
             tmpClusters = tmpClusters.concat(deepClone(dataIterationTwo.dataClusters));
 
-            dataSortObjectArrayByKey(tmpClusters, idKeyClusterData);
+            dataSortObjArrayByKeys(tmpClusters, [{key: idKeyClusterData, direction: 'asc'}]);
 
             // combine any duplicate clusters
             var tmpCombinedClusters = new Array();
@@ -696,26 +720,6 @@
             dataDeduplicateObjectArray(output.dataConsolidatedIndv, idKeyConsolidatedIndividuals);
 
             return output;
-        }
-
-        function dataSortObjectArrayByKey(dataArray, sortKey)
-        {
-            dataArray.sort((a,b) => {
-                var valA = a[sortKey];
-                var valB = b[sortKey];
-
-                if(valA>valB)
-                {
-                    return 1;
-                }
-
-                if(valA<valB)
-                {
-                    return -1;
-                }
-
-                return 0;
-            })
         }
 
         function dataDeduplicateObjectArray(data, dedupKey)
