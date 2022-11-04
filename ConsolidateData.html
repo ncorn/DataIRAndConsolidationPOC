@@ -175,8 +175,9 @@
         function dataCalculateDeltas(objGroupA, objGroupB, compareKey)
         {
             var sortConfig = [{ key: compareKey, direction: 'asc'}]
+
             dataSortObjArrayByKeys(objGroupA, sortConfig);
-            dataSortObjArrayByKeys(objGroupA, sortConfig);
+            dataSortObjArrayByKeys(objGroupB, sortConfig);
 
             var idxB = 0;
             var isFirstB = true;
@@ -613,6 +614,7 @@
                         {
                             clusterAMatched = true;
                             dataCalculateDeltas(curClusterA.individuals, curClusterB.individuals, idKeyRaw);
+                            clusterAMatched = true;
                         }
                     }
 
