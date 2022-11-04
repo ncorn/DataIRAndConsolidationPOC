@@ -1,7 +1,7 @@
 <html>
     <head>
         <style>
-            #tblOutput, #tblConsolIndv, #tblConsolIndv tr, .dataOutput{
+            .dataOutput{
                 border-collapse: collapse;
                 border: solid 1px #000000;
                 margin-bottom: 20px;
@@ -17,12 +17,10 @@
 
             .cellHeader{
                 padding: 10px;
-                border: solid 0px #000000;
             }
 
             .cellData{
                 padding: 10px;
-                border: solid 0px #000000;
             }
 
             .rowConsol{
@@ -31,11 +29,18 @@
 
             .cellConsol{
                 padding: 10px;
-                border: solid 0px #000000;
             }
             
             .outContainer {
                 margin-bottom: 20px;
+            }
+
+            .added{
+                border: solid 3px #00ff00;
+            }
+
+            .removed{
+                border: solid 3px #ff0000;
             }
         </style>
 
@@ -57,17 +62,26 @@
         </script>
         <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
         
+        <script src="Scenario-MultipleLeads.js"></script>
+        <!--
+        <script src="Scenario-MultipleContacts.js"></script>
         <script src="Scenario-MultipleEmails.js"></script>
         <script src="Scenario-SharedFamilyEmail.js"></script>
         <script src="Scenario-NameChange.js"></script>
         <script src="Scenario-EmailChange.js"></script>
-        <script src="Scenario-MultipleContacts.js"></script>
-        <script src="Scenario-MultipleLeads.js"></script>
+        -->
         <script lang="javascript"></script>
     </head>
     <body>
         <div>
-            <select id="selScenario"></select>
+            <select id="selScenario">
+                <option></option>
+            </select>
+            <select id="selDeltaView">
+                <option value="merged" selected="true">Merged</option>
+                <option value="start">Start</option>
+                <option value="finish">Finish</option>
+            </select>
         </div>
         <h1>Raw Individuals</h1>
         <div class="outContainer" id="outRawData"></div>
@@ -79,6 +93,8 @@
         <div class="outContainer" id="outConsolidatedData"></div>
     </body>
     <script lang="javascript">
+        var currentScenario = scenarios[0];
+        var currentView = 'merged';
         var scenarioDD = $('#selScenario');
         
         for(var idx in scenarios)
@@ -92,7 +108,21 @@
         scenarioDD.change(function()
         {
             clear();
-            output(scenarios[this.value]);
+
+            if(this.value != '')
+            {
+                currentScenario = scenarios[this.value];
+                executePipeline(currentScenario, 0, 1, currentView /*'merged' 'start' 'finish'*/);
+            }
+        });
+
+        var viewDD = $('#selDeltaView');
+
+        viewDD.change(function(){
+            currentView = this.value;
+
+            clear();
+            executePipeline(currentScenario, 0, 1, currentView /*'merged' 'start' 'finish'*/);
         });
 
         function clear(){
@@ -102,15 +132,226 @@
             {
                 $('#' + clearIDs[idx]).empty();
             }
+        }
+
+        function deepClone(obj){
+            return JSON.parse(JSON.stringify(obj));
+        }
+
+        function dataCalculateDeltas(objGroupA, objGroupB, compareKey)
+        {
+            /*
+            var idsA = indivGroupA.map(x => x[compareKey]);
+            var idsB = indivGroupB.map(x => x[compareKey]);
+
+            var idsARemoved = [];
+            var idsAAdded = [];
+            var idsAMatched = [];
+            var idsBRemoved = [];
+            var idsARemoved = [];
+            var idsBMatched = [];
+            */
+
+            objGroupA.sort((a,b) => {
+                var valA = a[compareKey];
+                var valB = b[compareKey];
+
+                if(valA > valB)
+                {
+                    return 1;
+                }
+
+                if(valB > valA)
+                {
+                    return -1;
+                }
+
+                return 0;
+            });
+            objGroupB.sort();
+
+            var idxB = 0;
+            var isFirstB = true;
+
+            for(var idxA in objGroupA)
+            {
+                var objA = objGroupA[idxA];
+                var curValA = objA[compareKey];
+
+                var objMatched = false;
+
+                if(idxB < objGroupB.length)
+                {
+                    var objB = objGroupB[idxB];
+                    var curValB = objB[compareKey];
+
+                    while(idxB < objGroupB.length && curValA >= curValB)
+                    {
+                        if(curValA == curValB)
+                        {
+                            objA.delta = 'unchanged';
+                            objB.delta = 'unchanged';
+
+                            objMatched = true;
+                        }
+                        else{
+                            objB.delta = 'added';
+                        }
+
+                        //console.log(curValA + ' ' + curValB);
+
+                        idxB++;
+
+                        if(idxB < objGroupB.length)
+                        {
+                            objB = objGroupB[idxB];
+                            curValB = objB[compareKey];
+                        }
+                    }
+                }
+                
+                if(!objMatched)
+                {
+                    objA.delta = 'removed';
+                }
+            }
+        }
+
+        const hashString = function(str, seed = 0) {
+            let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+            for (let i = 0, ch; i < str.length; i++) {
+                ch = str.charCodeAt(i);
+                h1 = Math.imul(h1 ^ ch, 2654435761);
+                h2 = Math.imul(h2 ^ ch, 1597334677);
+            }
+            h1 = Math.imul(h1 ^ (h1>>>16), 2246822507) ^ Math.imul(h2 ^ (h2>>>13), 3266489909);
+            h2 = Math.imul(h2 ^ (h2>>>16), 2246822507) ^ Math.imul(h1 ^ (h1>>>13), 3266489909);
+            return 4294967296 * (2097151 & h2) + (h1>>>0);
         };
+
+        function crteateDataFromScenarioRawData(data, irMatchKey){
+            // get the raw data
+            var stepRawData = deepClone(data);
+
+            // get data sorted by match key
+            var stepSortedData = deepClone(data);
+
+            stepSortedData.sort(function(a,b){
+                var valA = a[irMatchKey];
+                var valB = b[irMatchKey];
+
+                if(valA>valB)
+                {
+                    return 1;
+                }
+
+                if(valA<valB)
+                {
+                    return -1;
+                }
+
+                    return 0;
+            });
+
+            // cluster the data (IR)
+            // break data apart by match key
+            var clusters = [];
+            var isFirst = true;
+            var prevValue;
+            var curCluster = {
+                matchValue: null,
+                clusterId: null,
+                individuals: new Array()
+            };
+            
+            clusters.push(curCluster);
+
+            for(var idx in stepSortedData)
+            {
+                if(isFirst)
+                {
+                    prevValue = stepSortedData[idx][irMatchKey];
+                    isFirst = false;
+                }
+
+                var curRow = deepClone(stepSortedData[idx]);
+                var curValue = curRow[irMatchKey];
+                var curClusterId = hashString(curValue);
+
+                if(curValue !== prevValue)
+                {
+                    curCluster = {
+                        matchValue: null,
+                        clusterId: null,
+                        individuals: new Array()
+                    };
+                    clusters.push(curCluster);
+                }
+
+                curCluster.matchValue = curValue;
+                curCluster.clusterId = curClusterId;
+                curCluster.individuals.push(curRow);
+
+                var prevValue = curValue;
+            }
+
+            var consolidatedIndividuals = new Array();
+
+            for(var idx in clusters)
+            {
+                var clst = clusters[idx];
+                var curConsIndv = ConsolidateData(clst.individuals, 'Consolidate');
+
+                clst.unifiedIndividualId = curConsIndv.id;
+
+                consolidatedIndividuals.push(curConsIndv);
+            }
+
+            var output = {
+                dataRaw: stepRawData,
+                dataMatchSorted: stepSortedData,
+                dataClusters: clusters,
+                dataConsolidatedIndv: consolidatedIndividuals
+            };
+
+            return output;
+        }
+
+        function outputTablesForEachDataType(dataObj)
+        {
+            // Display the raw data
+            outputTableFromObjectArray(dataObj.dataRaw, 'outRawData');
+            outputTableFromObjectArray(dataObj.dataConsolidatedIndv, 'outConsolidatedData', true);
+
+            for(var idx in dataObj.dataClusters)
+            {
+                var curCluster = dataObj.dataClusters[idx];
+                var table = outputTableFromObjectArray(curCluster.individuals, 'outGroupedData', true);
+
+                var clusterRow = $('<tr><td colspan="100">Unified Individual Id: ' + curCluster.unifiedIndividualId + ', Cluster ID: ' + curCluster.clusterId + ', Match Value: ' + curCluster.matchValue + ', Delta: ' + curCluster.delta + '</td></tr>');
+                table.prepend(clusterRow);
+
+                if(curCluster.delta == 'removed')
+                {
+                    table.addClass('removed');
+                }
+
+                if(curCluster.delta == 'added')
+                {
+                    table.addClass('added');
+                }
+            }
+        }
 
         function output(curScenario)
         {
-            // Display Data
-            CreateTableFromArray(curScenario.data, 'outRawData');
+            return;
+            // Display the raw data
+            outputTableFromObjectArray(curScenario.data, 'outRawData');
 
             // sort data on match key
-            var sortedRawData = curScenario.data.map((x) => x);
+            //var sortedRawData = curScenario.data.map((x) => x);
+            var sortedRawData = deepClone(curScenario.data);
             
             sortedRawData.sort(function(a,b){
                 var valA = a[curScenario.matchKey];
@@ -129,7 +370,7 @@
                     return 0;
             });
 
-            CreateTableFromArray(sortedRawData, 'outSortedData', false);
+            outputTableFromObjectArray(sortedRawData, 'outSortedData', false);
 
             // break data apart by match key
             var groupedRecoreds = [];
@@ -205,12 +446,11 @@
                 unifiedIndividuals.push(consolidated);
                 data.push(consolidated);
 
-                CreateTableFromArray(data, 'outGroupedData', true);
+                outputTableFromObjectArray(data, 'outGroupedData', true);
             }
 
-            CreateTableFromArray(unifiedIndividuals, 'outConsolidatedData', true);
+            outputTableFromObjectArray(unifiedIndividuals, 'outConsolidatedData', true);
         }
-
 
         function ConsolidateData(arrayData, mode)
         {
@@ -244,12 +484,12 @@
             return retObj;
         }            
 
-        function CreateTableFromArray(arrayData, outContainerID, append)
+        function outputTableFromObjectArray(arrayData, outContainerID, append)
         {
+            var outTable = $('<table class="dataOutput"></table>');
             var excludedKeys = [ 'color', 'colorMap', 'isUnifiedIndv' ];
             var data = arrayData;
             var masterObj = getCompleteProperties(arrayData);
-            var outTable = $('<table class="dataOutput"></table>');
 
             var outContainer = $('#' + outContainerID);
 
@@ -308,8 +548,18 @@
 
                 if(curData.isUnifiedIndv)
                 {
-                    row = $('<tr class="rowConsol"></tr>');
+                    row.addClass('rowConsol');
                     rank = '';
+                }
+
+                if(curData.delta == 'added')
+                {
+                    row.addClass('added');
+                }
+
+                if(curData.delta == 'removed')
+                {
+                    row.addClass('removed');
                 }
 
                 outTable.append(row);
@@ -360,6 +610,8 @@
                     }
                 }
             }
+
+            return outTable;
         }
 
         function getCompleteProperties(arrayData)
@@ -385,5 +637,201 @@
         }
 
         output(scenarios[defaultScenario]);
+        
+        var testScenario = scenarios[3];
+
+        function executePipeline(scenario, startStepIdx, finishStepIdx, outputStep)
+        {
+            var matchKey = scenario.matchKey;
+            var inputDataStart = scenario.data[startStepIdx];
+            var inputDataFinish = scenario.data[finishStepIdx];
+
+            var idKeyRaw = 'id';
+            var idKeyClust = 'unifiedIndividualId';
+            //var idKeyClust = 'clusterId';
+            var idKeyConsIndv = 'id';
+            //var idKeyConsIndv = idKeyClust;
+
+            // compute all the data - cluster data, consolidate data
+            var computedDataStart = crteateDataFromScenarioRawData(inputDataStart, matchKey);
+            var computedDataFinish = crteateDataFromScenarioRawData(inputDataFinish, matchKey);
+
+            dataCalculateDeltas(computedDataStart.dataRaw, computedDataFinish.dataRaw, idKeyRaw);
+            dataCalculateDeltas(computedDataStart.dataClusters, computedDataFinish.dataClusters, idKeyClust)
+            dataCalculateDeltas(computedDataStart.dataConsolidatedIndv, computedDataFinish.dataConsolidatedIndv, idKeyConsIndv);
+
+            // calculate deltas for each individual cluster
+            for(var idxA in computedDataStart.dataClusters)
+            {
+                var curClusterA = computedDataStart.dataClusters[idxA];
+                var curClusterAId = curClusterA[idKeyClust];
+                var clusterAMatched = false;
+
+                for(var idxB in computedDataFinish.dataClusters)
+                {
+                    var curClusterB = computedDataFinish.dataClusters[idxB];
+                    var curClusterBId = curClusterB[idKeyClust];
+
+                    if(curClusterAId == curClusterBId)
+                    {
+                        clusterAMatched = true;
+                        dataCalculateDeltas(curClusterA.individuals, curClusterB.individuals, idKeyRaw);
+                    }
+                }
+
+                if(!clusterAMatched)
+                {
+                    for(var removedIdx in curClusterA.individuals)
+                    {
+                        curClusterA.individuals[removedIdx].delta = 'removed';
+                    }
+                }
+            }
+
+            for(var idx in computedDataFinish.dataClusters)
+            {
+                var curClusterFinished = computedDataFinish.dataClusters[idx];
+
+                if(curClusterFinished.delta == 'added')
+                {
+                    for(var addIdx in curClusterFinished.individuals)
+                    {
+                        curClusterFinished.individuals[addIdx].delta = 'added';
+                    } 
+                }
+            }
+
+            var finalData = computedDataFinish;
+
+            if(outputStep == 'start')
+            {
+                finalData = computedDataStart;
+            }
+
+            if(outputStep == 'merged')
+            {
+                finalData = dataCombineDataIterations(computedDataStart, computedDataFinish, idKeyRaw, idKeyClust, idKeyConsIndv);
+            }
+
+            outputTablesForEachDataType(finalData);
+        }
+
+        function dataCombineDataIterations(dataIterationOne, dataIterationTwo, idKeyRawData, idKeyClusterData, idKeyConsolidatedIndividuals)
+        {
+            var output = {
+                dataRaw: deepClone(dataIterationOne.dataRaw),
+                dataMatchSorted: deepClone(dataIterationOne.dataMatchSorted),
+                dataClusters: deepClone(dataIterationOne.dataClusters),
+                dataConsolidatedIndv: deepClone(dataIterationOne.dataConsolidatedIndv)
+            };
+
+            output.dataRaw = output.dataRaw.concat(deepClone(dataIterationTwo.dataRaw));
+            output.dataMatchSorted = output.dataMatchSorted.concat(deepClone(dataIterationTwo.dataMatchSorted));
+            output.dataConsolidatedIndv = output.dataConsolidatedIndv.concat(deepClone(dataIterationTwo.dataConsolidatedIndv));
+
+            output.dataClusters = output.dataClusters.concat(deepClone(dataIterationTwo.dataClusters));
+
+            var tmpClusters = deepClone(dataIterationOne.dataClusters);
+            tmpClusters = tmpClusters.concat(deepClone(dataIterationTwo.dataClusters));
+
+            dataSortObjectArrayByKey(tmpClusters, idKeyClusterData);
+
+            // combine any duplicate clusters
+            var tmpCombinedClusters = new Array();
+            var idx = 0;
+            var nextClusterIdx = idx + 1;
+
+            while(idx < tmpClusters.length)
+            {
+                var curCluster = tmpClusters[idx];
+                var nextCluster = tmpClusters[nextClusterIdx];
+                var tmpClusterACopy = deepClone(curCluster);
+                tmpCombinedClusters.push(tmpClusterACopy);
+
+                if(nextCluster === undefined)
+                {
+                    
+                }
+                else if(curCluster[idKeyClusterData] == nextCluster[idKeyClusterData])
+                {
+                    while(nextCluster !== undefined && curCluster[idKeyClusterData] == nextCluster[idKeyClusterData])
+                    {
+                        var tmpClusterBCopy = deepClone(nextCluster);
+
+                        tmpClusterACopy.individuals = tmpClusterACopy.individuals.concat(tmpClusterBCopy.individuals);
+
+                        nextClusterIdx++;
+                        nextCluster = tmpClusters[nextClusterIdx];
+                    }
+                }
+                else if(curCluster[idKeyClusterData] != nextCluster[idKeyClusterData])
+                {
+
+                }
+
+                dataDeduplicateObjectArray(tmpClusterACopy.individuals, idKeyRawData);
+
+                idx = nextClusterIdx;
+                nextClusterIdx = idx + 1;
+            }
+
+            output.dataClusters = tmpCombinedClusters;
+
+            dataDeduplicateObjectArray(output.dataRaw, idKeyRawData);
+            //dataDeduplicateObjectArray(output.dataClusters, idKeyClusterData);
+            dataDeduplicateObjectArray(output.dataConsolidatedIndv, idKeyConsolidatedIndividuals);
+
+            return output;
+        }
+
+        function dataSortObjectArrayByKey(dataArray, sortKey)
+        {
+            dataArray.sort((a,b) => {
+                var valA = a[sortKey];
+                var valB = b[sortKey];
+
+                if(valA>valB)
+                {
+                    return 1;
+                }
+
+                if(valA<valB)
+                {
+                    return -1;
+                }
+
+                return 0;
+            })
+        }
+
+        function dataDeduplicateObjectArray(data, dedupKey)
+        {
+            for(var idx in data)
+            {
+                var rowA = data[idx];
+                var valA = rowA[dedupKey];
+
+                for(var idxInner = Number.parseInt(idx) + 1; idxInner < data.length; idxInner++)
+                {
+                    var rowB = data[idxInner];
+                    var valB = rowB[dedupKey];
+
+                    while(valA == valB && idxInner < data.length)
+                    {
+                        data.splice(idxInner, 1);
+
+                        if(idxInner < data.length)
+                        {
+                            rowB = data[idxInner];
+                            valB = rowB[dedupKey];
+                        }
+                    }
+                }
+            }
+        }
+
+        executePipeline(curScenario, 0, 1, currentView /*'merged' 'start' 'finish'*/);
+
+        var test = 'test';
     </script>
 </html>
