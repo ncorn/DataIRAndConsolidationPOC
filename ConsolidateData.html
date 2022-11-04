@@ -46,7 +46,7 @@
 
         <script lang="javascript">
             var scenarios = [];
-            var defaultScenario = 4;
+            var defaultScenario = 0;
 
             var colors = [
                 'ffdbd9',
@@ -63,10 +63,11 @@
         <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
         
         <script src="Scenario-MultipleLeads.js"></script>
+        <script src="Scenario-SharedFamilyEmail.js"></script>
+
         <!--
         <script src="Scenario-MultipleContacts.js"></script>
         <script src="Scenario-MultipleEmails.js"></script>
-        <script src="Scenario-SharedFamilyEmail.js"></script>
         <script src="Scenario-NameChange.js"></script>
         <script src="Scenario-EmailChange.js"></script>
         -->
@@ -94,7 +95,7 @@
         <div class="outContainer" id="outConsolidatedData"></div>
     </body>
     <script lang="javascript">
-        var currentscenarioIdx = 0;
+        var currentscenarioIdx = defaultScenario;
         var currentScenario = scenarios[currentscenarioIdx];
         var currentScenarioStartingStep = 0;
         var currentView = 'merged';
@@ -150,7 +151,7 @@
         function populateStepDDByScenario(scenario)
         {
             stepDD.empty();
-            
+
             for(var i = 0; i < scenario.data.length - 1; i++)
             {
                 stepDD.append('<option value="' + i + '">' + (i+1) + '</option>');
@@ -229,8 +230,6 @@
                         else{
                             objB.delta = 'added';
                         }
-
-                        //console.log(curValA + ' ' + curValB);
 
                         idxB++;
 
@@ -375,115 +374,6 @@
             }
         }
 
-        function output(curScenario)
-        {
-            return;
-            // Display the raw data
-            outputTableFromObjectArray(curScenario.data, 'outRawData');
-
-            // sort data on match key
-            //var sortedRawData = curScenario.data.map((x) => x);
-            var sortedRawData = deepClone(curScenario.data);
-            
-            sortedRawData.sort(function(a,b){
-                var valA = a[curScenario.matchKey];
-                var valB = b[curScenario.matchKey];
-
-                if(valA>valB)
-                {
-                    return 1;
-                }
-
-                if(valA<valB)
-                {
-                    return -1;
-                }
-
-                    return 0;
-            });
-
-            outputTableFromObjectArray(sortedRawData, 'outSortedData', false);
-
-            // break data apart by match key
-            var groupedRecoreds = [];
-            var isFirst = true;
-            var prevValue;
-            var curGroup = new Array();
-            groupedRecoreds.push(curGroup);
-
-            for(var idx in sortedRawData)
-            {
-                if(isFirst)
-                {
-                    prevValue = sortedRawData[idx][curScenario.matchKey];
-                    isFirst = false;
-                }
-
-                var curRow = sortedRawData[idx];
-                var curValue = curRow[curScenario.matchKey];
-
-                if(curValue !== prevValue)
-                {
-                    curGroup = new Array();
-                    groupedRecoreds.push(curGroup);
-                }
-
-                curGroup.push(curRow);
-
-                var prevValue = curValue;
-            }
-
-            var unifiedIndividuals = [];
-
-            for(var idx in groupedRecoreds)
-            {
-                var data = groupedRecoreds[idx];
-
-                data.sort(function(a,b){
-                    var typeRanking = {
-                        Contact: 0,
-                        Lead: 1
-                    };
-
-                    var rankA = typeRanking[a.object_type];
-                    var rankB = typeRanking[b.object_type];
-
-                    if(rankA > rankB)
-                    {
-                        return 1;
-                    }
-
-                    if(rankA < rankB)
-                    {
-                        return -1;
-                    }
-
-                    if(rankA == rankB)
-                    {
-                        if(a.last_updated > b.last_updated)
-                        {
-                            return -1;
-                        }
-
-                        if(b.last_updated > a.last_updated)
-                        {
-                            return 1;
-                        }
-                    }
-
-                    return 0;
-                })
-
-                var consolidated = ConsolidateData(data, 'Consolidate');
-                unifiedIndividuals.push(consolidated);
-                data.push(consolidated);
-
-                outputTableFromObjectArray(data, 'outGroupedData', true);
-            }
-
-            outputTableFromObjectArray(unifiedIndividuals, 'outConsolidatedData', true);
-        }
-
         function ConsolidateData(arrayData, mode)
         {
             var masterObj = getCompleteProperties(arrayData);
@@ -564,7 +454,6 @@
             {
                 if(!excludedKeys.includes(masterKey))
                 {
-                    //console.log('MK: ' + masterKey);
                     var col = rowHeader.append('<th class="cellHeader">' + masterKey + '</th>');
                 }
             }
@@ -612,9 +501,6 @@
                         {
                             curColor = curData.colorMap[masterKey] ?? curColor;
                         }
-
-                        //console.log(key);
-                        //console.log(curVal);
 
                         if(Array.isArray(curVal))
                         {
@@ -667,10 +553,6 @@
 
             return masterObj;
         }
-
-        output(scenarios[defaultScenario]);
-        
-        var testScenario = scenarios[3];
 
         function executePipeline(scenario, startStepIdx, finishStepIdx, outputStep)
         {
