@@ -5,9 +5,14 @@
                 border-collapse: collapse;
                 border: solid 1px #000000;
                 margin-bottom: 20px;
+                width: 800px;
             }
 
             #tblConsolIndv td{
+                padding: 10px;
+            }
+
+            .rowClusterInfo td{
                 padding: 10px;
             }
 
@@ -45,6 +50,7 @@
         </style>
 
         <script lang="javascript">
+            var showDeltas = true;
             var scenarios = [];
             var defaultScenario = 0;
 
@@ -153,9 +159,18 @@
         {
             stepDD.empty();
 
-            for(var i = 0; i < scenario.data.length - 1; i++)
+            if(scenario.data.length <= 1)
             {
-                stepDD.append('<option value="' + i + '">' + (i+1) + '</option>');
+                stepDD.hide();
+            }
+            else
+            {
+                stepDD.show();
+
+                for(var i = 0; i < scenario.data.length - 1; i++)
+                {
+                    stepDD.append('<option value="' + i + '">' + (i+1) + '</option>');
+                }
             }
         }
 
@@ -328,14 +343,14 @@
         {
             // Display the raw data
             outputTableFromObjectArray(dataObj.dataRaw, 'outRawData');
-            outputTableFromObjectArray(dataObj.dataConsolidatedIndv, 'outConsolidatedData', true);
+            outputTableFromObjectArray(dataObj.dataConsolidatedIndv, 'outConsolidatedData', true, false);
 
             for(var idx in dataObj.dataClusters)
             {
                 var curCluster = dataObj.dataClusters[idx];
-                var table = outputTableFromObjectArray(curCluster.individuals, 'outGroupedData', true);
+                var table = outputTableFromObjectArray(curCluster.individuals, 'outGroupedData', true, true);
 
-                var clusterRow = $('<tr><td colspan="100">Unified Individual Id: ' + curCluster.unifiedIndividualId + ', Cluster ID: ' + curCluster.clusterId + ', Match Value: ' + curCluster.matchValue + ', Delta: ' + curCluster.delta + '</td></tr>');
+                var clusterRow = $('<tr class="rowClusterInfo"><td colspan="100"><b>Unified Individual Id:</b> ' + curCluster.unifiedIndividualId + ', <b>Cluster ID:</b> ' + curCluster.clusterId + ', <b>Match Value:</b> ' + curCluster.matchValue + ', <b>Delta:</b> ' + curCluster.delta + '</td></tr>');
                 table.prepend(clusterRow);
 
                 if(curCluster.delta == 'removed')
@@ -426,10 +441,16 @@
             });
         }   
 
-        function outputTableFromObjectArray(arrayData, outContainerID, append)
+        function outputTableFromObjectArray(arrayData, outContainerID, append, showRank)
         {
             var outTable = $('<table class="dataOutput"></table>');
             var excludedKeys = [ 'color', 'colorMap', 'isUnifiedIndv' ];
+
+            if(!showDeltas)
+            {
+                excludedKeys.push('delta');
+            }
+
             var data = arrayData;
             var masterObj = getCompleteProperties(arrayData);
 
@@ -468,7 +489,11 @@
             // output the headers
             var rowHeader = $('<tr class="rowHeader"></tr>');// outputTable.append('<th></th>');
             outTable.append(rowHeader);
-            rowHeader.append('<th class="cellHeader">Rank</th>');
+
+            if(showRank)
+            {
+                rowHeader.append('<th class="cellHeader">Rank</th>');
+            }
 
             for(var masterKey in masterObj)
             {
@@ -504,7 +529,11 @@
                 }
 
                 outTable.append(row);
-                row.append('<td class="cellData" style="background-color: #' + curColor + '">' + rank + '</td>');
+
+                if(showRank)
+                {
+                    row.append('<td class="cellData" style="background-color: #' + curColor + '">' + rank + '</td>');
+                }
 
                 for(var masterKey in masterObj)
                 {
