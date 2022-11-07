@@ -91,12 +91,14 @@
                 float: left;
                 padding: 20px;
                 border: solid 1px #000000;
-                margin: 0 15px 0 15px;
+                margin: 6px 15px 0 0;
+                background-color: #ffffff;
             }
 
             .scenarioStepPointer{
                 float: left;
                 padding: 20px 0 20px 0;
+                margin: 6px 15px 0px 0px;
             }
 
             #outSteps :last-child{
@@ -109,6 +111,18 @@
 
             .selectedStep{
                 background-color: #fdff8c;
+            }
+
+            .stepGroup{
+                float: left;
+                border: solid 1px #000000;
+                padding: 5px;
+                background-color: #efefef;
+                margin: 0px 15px 0px 0px;
+            }
+
+            .stepgroup .scenarioStep, .stepgroup .scenarioStepPointer{
+                margin-top: 0;
             }
         </style>
 
@@ -135,12 +149,12 @@
         <script src="Scenario-SharedFamilyEmail.js"></script>
         <script src="Scenario-NameChange.js"></script>
         <script src="Scenario-MultipleContacts.js"></script>
+        <script src="Scenario-EmailChange.js"></script>
 
         <!--
         
         <script src="Scenario-MultipleEmails.js"></script>
         
-        <script src="Scenario-EmailChange.js"></script>
         -->
         <script lang="javascript"></script>
     </head>
@@ -225,6 +239,8 @@
                     tmpCurScenarioStartStep--;
                 }
 
+                viewDD.val(currentView);
+
                 populateStepDDByScenario(currentScenario);
                 outputStepUIScenario(currentScenario);
                 executePipeline(currentScenario, tmpCurScenarioStartStep, tmpCurScenarioStartStep + 1, currentView /*'merged' 'start' 'finish'*/);
@@ -254,28 +270,116 @@
         function outputStepUIScenario(scenario)
         {
             var container = $('#outSteps');
+            var outStepGroupDiv = $('<div class="stepGroup"></div>');
+            var isFirstSelected = true;
+            
 
             for(var i = 0; i < scenario.steps.length; i++)
             {
-                var outStepDiv = $('<div class="scenarioStep">' + scenario.steps[i].title + '</div>');
+                var isCurrentSelectedStep = false;
 
                 if(i == currentScenarioStartingStep)
                 {
-                    outStepDiv.addClass('selectedStep');
+                    isCurrentSelectedStep = true;
+                }
+
+                var addPointerToGroup = false;
+
+                if(isCurrentSelectedStep && (currentView == 'start' || currentView == 'merged'))
+                {
+                    addPointerToGroup = true;
+                }
+
+                if(i == currentScenarioStartingStep - 1 && currentView == 'finish')
+                {
+                    addPointerToGroup = true;
+                }
+
+                var outStepDiv = $('<div class="scenarioStep">' + scenario.steps[i].title + '</div>');
+                var isInCurrentGroup = false;
+
+                var outPointer = $('<div class="scenarioStepPointer">-></div>');
+
+                (function(index){
+                        outPointer.click
+                        (
+                                function()
+                                { 
+                                    currentScenarioStartingStep = index;
+                                    currentView = "merged";
+                                    uiRenderCurrentSelections();
+                                }
+                        )
+                    }
+                    )(i);
+
+
+                if(isCurrentSelectedStep)
+                {
+                    isInCurrentGroup = true;
+                }
+
+                if((currentView == 'start' || currentView == 'merged' ) && i == currentScenarioStartingStep + 1)
+                {
+                    isInCurrentGroup = true;
+                }
+
+                if(currentView == 'finish' && i == currentScenarioStartingStep - 1)
+                {
+                    isInCurrentGroup = true;
                 }
 
                 (function(index){
                     outStepDiv.click(function(){ 
                         currentScenarioStartingStep = index;
+
+                        if(index == currentScenario.steps.length - 1)
+                        {
+                            currentView = 'finish';
+                        }
+                        else if(index == 0)
+                        {
+                            currentView = 'start';
+                        }
+                        else
+                        {
+                            currentView = currentView == 'start' ? 'finish' : 'start';
+                        }
+
                         uiRenderCurrentSelections();
                      })
                 })(i);
 
-                container.append(outStepDiv);
+                if(isInCurrentGroup)
+                {
+                    if(isFirstSelected)
+                    {
+                        isFirstSelected = false;
+                        container.append(outStepGroupDiv);
+                    }
+
+                    outStepGroupDiv.append(outStepDiv);
+
+                    if(isCurrentSelectedStep || currentView == 'merged')
+                    {
+                        outStepDiv.addClass('selectedStep');
+                    }
+                }
+                else
+                {
+                    container.append(outStepDiv);
+                }
 
                 if(i < scenario.steps.length - 1)
                 {
-                    container.append('<div class="scenarioStepPointer">-></div>');
+                    if(isInCurrentGroup && addPointerToGroup)
+                    {
+                        outStepGroupDiv.append(outPointer);
+                    }
+                    else
+                    {
+                        container.append(outPointer);
+                    }
                 }
             }
         }
