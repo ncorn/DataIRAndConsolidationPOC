@@ -80,6 +80,22 @@
             {
                 border-right-width: 3px;
             }
+
+            #outSteps{
+                margin-bottom: 20px;
+                float: left;
+            }
+
+            .scenarioStep{
+                float: left;
+                padding: 20px;
+                border: solid 1px #000000;
+                margin-right: 15px;
+            }
+
+            #outSteps :last-child{
+                margin-right: 0;
+            }
         </style>
 
         <script lang="javascript">
@@ -102,8 +118,11 @@
         <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
         
         <script src="Scenario-MultipleLeads.js"></script>
+
+        <!--
         <script src="Scenario-SharedFamilyEmail.js"></script>
         <script src="Scenario-MultipleContacts.js"></script>
+        -->
 
         <!--
         
@@ -114,7 +133,7 @@
         <script lang="javascript"></script>
     </head>
     <body>
-        <div>
+        <div style="margin-bottom: 20px;">
             <select id="selScenario">
                 <option></option>
             </select>
@@ -125,7 +144,8 @@
             </select>
             <select id="selStepStart"></select>
         </div>
-        <h1>Raw Individuals</h1>
+        <div id="outSteps"></div>
+        <h1 style="clear: both;">Raw Individuals</h1>
         <div class="outContainer" id="outRawData"></div>
         <h1 style="display: none;">Match Key Sorted Individuals</h1>
         <div style="display: none;" class="outContainer" id="outSortedData"></div>
@@ -154,14 +174,9 @@
         
         scenarioDD.change(function()
         {
-            clear();
+            currentScenario = scenarios[this.value];
 
-            if(this.value != '')
-            {
-                currentScenario = scenarios[this.value];
-                populateStepDDByScenario(currentScenario);
-                executePipeline(currentScenario, currentScenarioStartingStep, currentScenarioStartingStep + 1, currentView /*'merged' 'start' 'finish'*/);
-            }
+            uiRenderCurrentSelections();
         });
 
         var viewDD = $('#selDeltaView');
@@ -169,8 +184,7 @@
         viewDD.change(function(){
             currentView = this.value;
 
-            clear();
-            executePipeline(currentScenario, currentScenarioStartingStep, currentScenarioStartingStep + 1, currentView /*'merged' 'start' 'finish'*/);
+            uiRenderCurrentSelections();
         });
 
         var stepDD = $('#selStepStart');
@@ -178,21 +192,24 @@
         stepDD.change(function(){
             currentScenarioStartingStep = Number.parseInt(this.value);
 
-            clear();
-            executePipeline(currentScenario, currentScenarioStartingStep, currentScenarioStartingStep + 1, currentView /*'merged' 'start' 'finish'*/);
+            uiRenderCurrentSelections();
         });
 
-        function refresh()
+        function uiRenderCurrentSelections()
         {
-            populateStepDDByScenario(currentScenario);
-            executePipeline(currentScenario, currentScenarioStartingStep, currentScenarioStartingStep + 1, currentView /*'merged' 'start' 'finish'*/);
+            clear();
+
+            if(currentScenario !== undefined && currentScenario !== null)
+            {
+                populateStepDDByScenario(currentScenario);
+                outputStepUIScenario(currentScenario);
+                executePipeline(currentScenario, currentScenarioStartingStep, currentScenarioStartingStep + 1, currentView /*'merged' 'start' 'finish'*/);
+            }
         }
 
         function populateStepDDByScenario(scenario)
         {
-            stepDD.empty();
-
-            if(scenario.data.length <= 1)
+            if(scenario.steps.length <= 1)
             {
                 stepDD.hide();
             }
@@ -200,20 +217,35 @@
             {
                 stepDD.show();
 
-                for(var i = 0; i < scenario.data.length - 1; i++)
+                for(var i = 0; i < scenario.steps.length - 1; i++)
                 {
-                    stepDD.append('<option value="' + i + '">' + (i+1) + '</option>');
+                    stepDD.append('<option value="' + i + '">' + scenario.steps[i].title + '</option>');
                 }
+
+                stepDD.val(currentScenarioStartingStep);
+            }
+        }
+
+        function outputStepUIScenario(scenario)
+        {
+            var container = $('#outSteps');
+
+            for(var i = 0; i < scenario.steps.length; i++)
+            {
+                container.append('<div class="scenarioStep">' + scenario.steps[i].title + '</div>');
+                container.append('<div class="scenarioStep">-></div>');
             }
         }
 
         function clear(){
-            var clearIDs = ['outRawData', 'outSortedData', 'outGroupedData', 'outConsolidatedData'];
+            var clearIDs = ['outRawData', 'outSortedData', 'outGroupedData', 'outConsolidatedData', 'outSteps', 'selStepStart'];
 
             for(var idx in clearIDs)
             {
                 $('#' + clearIDs[idx]).empty();
             }
+
+            $('#selStepStart').hide();
         }
 
         function deepClone(obj){
@@ -648,8 +680,8 @@
         function executePipeline(scenario, startStepIdx, finishStepIdx, outputStep)
         {
             var matchKey = scenario.matchKey;
-            var inputDataStart = scenario.data[startStepIdx];
-            var inputDataFinish = scenario.data[finishStepIdx];
+            var inputDataStart = scenario.steps[startStepIdx].data;
+            var inputDataFinish = scenario.steps[finishStepIdx].data;
 
             var idKeyRaw = 'id';
             var idKeyClust = 'unifiedIndividualId';
@@ -661,7 +693,7 @@
             var computedDataStart = crteateDataFromScenarioRawData(inputDataStart, matchKey);
             var finalData = computedDataStart;
 
-            if(scenario.data.length > 1)
+            if(scenario.steps.length > 1)
             {
                 var computedDataFinish = crteateDataFromScenarioRawData(inputDataFinish, matchKey);
 
@@ -821,6 +853,6 @@
             }
         }
 
-        refresh();
+        uiRenderCurrentSelections();
     </script>
 </html>
