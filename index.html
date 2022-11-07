@@ -2,10 +2,11 @@
     <head>
         <style>
             .dataOutput{
-                border-collapse: collapse;
+                border-collapse: separate;
                 border: solid 1px #000000;
                 margin-bottom: 20px;
                 width: 800px;
+                border-spacing: 0;
             }
 
             #tblConsolIndv td{
@@ -16,7 +17,7 @@
                 padding: 10px;
             }
 
-            .rowHeader{
+            .rowHeader, .rowClusterInfo{
                 border: solid 1px #000000;
             }
 
@@ -44,8 +45,40 @@
                 border: solid 3px #00ff00;
             }
 
+            tr.added td
+            {
+                border: solid #00ff00;
+                border-width: 3px 0px;
+            }
+
+            tr.added :first-child
+            {
+                border-left-width: 3px;
+            }
+
+            tr.added :last-child
+            {
+                border-right-width: 3px;
+            }
+
             .removed{
                 border: solid 3px #ff0000;
+            }
+
+            tr.removed td
+            {
+                border: solid #ff0000;
+                border-width: 3px 0px;
+            }
+
+            tr.removed :first-child
+            {
+                border-left-width: 3px;
+            }
+
+            tr.removed :last-child
+            {
+                border-right-width: 3px;
             }
         </style>
 
