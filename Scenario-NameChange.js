@@ -1,9 +1,17 @@
 var scnrNameChange = {
     title: 'Name Change',
     mode: 'Consolidate',
-    data: [
-        { color: 'fffead', object_type: 'Contact', id: 'C1', FirstName: 'Susan', LastName: 'Johnson', Email: 'Susan.Johnson@mailprovider.com', last_updated: '2022-10-01' },
-        { color: 'ccffcf', object_type: 'Lead', id: 'L1', FirstName: 'Susan', LastName: 'Smith', Email: 'Susan.Johnson@mailprovider.com', last_updated: '2022-10-03' },
+    matchKey: 'Email',
+    steps: [
+        {
+            title: 'Initial Data',
+            description: '',
+            data: 
+            [
+                { color: 'fffead', object_type: 'Contact', id: 'C1', FirstName: 'Susan', LastName: 'Johnson', Email: 'Susan.Johnson@mailprovider.com', last_updated: '2022-10-01' },
+                { color: 'ccffcf', object_type: 'Lead', id: 'L1', FirstName: 'Susan', LastName: 'Smith', Email: 'Susan.Johnson@mailprovider.com', last_updated: '2022-10-03' },
+            ]
+        }
     ]
 }
 

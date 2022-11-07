@@ -84,17 +84,31 @@
             #outSteps{
                 margin-bottom: 20px;
                 float: left;
+                cursor: pointer;
             }
 
             .scenarioStep{
                 float: left;
                 padding: 20px;
                 border: solid 1px #000000;
-                margin-right: 15px;
+                margin: 0 15px 0 15px;
+            }
+
+            .scenarioStepPointer{
+                float: left;
+                padding: 20px 0 20px 0;
             }
 
             #outSteps :last-child{
                 margin-right: 0;
+            }
+
+            #outSteps :first-child{
+                margin-left: 0;
+            }
+
+            .selectedStep{
+                background-color: #fdff8c;
             }
         </style>
 
@@ -118,16 +132,14 @@
         <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
         
         <script src="Scenario-MultipleLeads.js"></script>
-
-        <!--
         <script src="Scenario-SharedFamilyEmail.js"></script>
+        <script src="Scenario-NameChange.js"></script>
         <script src="Scenario-MultipleContacts.js"></script>
-        -->
 
         <!--
         
         <script src="Scenario-MultipleEmails.js"></script>
-        <script src="Scenario-NameChange.js"></script>
+        
         <script src="Scenario-EmailChange.js"></script>
         -->
         <script lang="javascript"></script>
@@ -175,6 +187,7 @@
         scenarioDD.change(function()
         {
             currentScenario = scenarios[this.value];
+            currentScenarioStartingStep = 0;
 
             uiRenderCurrentSelections();
         });
@@ -201,9 +214,20 @@
 
             if(currentScenario !== undefined && currentScenario !== null)
             {
+                var tmpCurScenarioStartStep = currentScenarioStartingStep
+
+                if(currentScenario.steps.length == 1)
+                {
+                    tmpCurScenarioStartStep = 0;
+                }
+                else if(tmpCurScenarioStartStep == (currentScenario.steps.length - 1))
+                {
+                    tmpCurScenarioStartStep--;
+                }
+
                 populateStepDDByScenario(currentScenario);
                 outputStepUIScenario(currentScenario);
-                executePipeline(currentScenario, currentScenarioStartingStep, currentScenarioStartingStep + 1, currentView /*'merged' 'start' 'finish'*/);
+                executePipeline(currentScenario, tmpCurScenarioStartStep, tmpCurScenarioStartStep + 1, currentView /*'merged' 'start' 'finish'*/);
             }
         }
 
@@ -217,9 +241,10 @@
             {
                 stepDD.show();
 
-                for(var i = 0; i < scenario.steps.length - 1; i++)
+                for(var i = 0; i < scenario.steps.length; i++)
                 {
-                    stepDD.append('<option value="' + i + '">' + scenario.steps[i].title + '</option>');
+                    var curOption = $('<option value="' + i + '">' + scenario.steps[i].title + '</option>');
+                    stepDD.append(curOption);
                 }
 
                 stepDD.val(currentScenarioStartingStep);
@@ -232,8 +257,26 @@
 
             for(var i = 0; i < scenario.steps.length; i++)
             {
-                container.append('<div class="scenarioStep">' + scenario.steps[i].title + '</div>');
-                container.append('<div class="scenarioStep">-></div>');
+                var outStepDiv = $('<div class="scenarioStep">' + scenario.steps[i].title + '</div>');
+
+                if(i == currentScenarioStartingStep)
+                {
+                    outStepDiv.addClass('selectedStep');
+                }
+
+                (function(index){
+                    outStepDiv.click(function(){ 
+                        currentScenarioStartingStep = index;
+                        uiRenderCurrentSelections();
+                     })
+                })(i);
+
+                container.append(outStepDiv);
+
+                if(i < scenario.steps.length - 1)
+                {
+                    container.append('<div class="scenarioStepPointer">-></div>');
+                }
             }
         }
 
@@ -681,7 +724,6 @@
         {
             var matchKey = scenario.matchKey;
             var inputDataStart = scenario.steps[startStepIdx].data;
-            var inputDataFinish = scenario.steps[finishStepIdx].data;
 
             var idKeyRaw = 'id';
             var idKeyClust = 'unifiedIndividualId';
@@ -695,6 +737,7 @@
 
             if(scenario.steps.length > 1)
             {
+                var inputDataFinish = scenario.steps[finishStepIdx].data;
                 var computedDataFinish = crteateDataFromScenarioRawData(inputDataFinish, matchKey);
 
                 dataCalculateDeltas(computedDataStart.dataRaw, computedDataFinish.dataRaw, idKeyRaw);
