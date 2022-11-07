@@ -237,6 +237,15 @@
                     objA.delta = 'removed';
                 }
             }
+
+            while(idxB < objGroupB.length)
+            {
+                var curObjB = objGroupB[idxB];
+
+                curObjB.delta = 'added';
+
+                idxB++;
+            }
         }
 
         function hashString(str, seed = 0) {
