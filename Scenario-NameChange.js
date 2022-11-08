@@ -1,4 +1,5 @@
 var scnrNameChange = {
+    id: 'NameChange',
     title: 'Name Change',
     mode: 'Consolidate',
     matchKey: 'Email',

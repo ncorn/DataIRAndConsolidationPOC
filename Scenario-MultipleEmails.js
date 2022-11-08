@@ -1,4 +1,5 @@
 var scenarioMultipleEmails = {
+    id: 'IndvWithMultEmails',
     title: 'Indv With Multiple Emails',
     mode: 'Consoidate',
     matchKey: 'Email',

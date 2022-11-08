@@ -1,4 +1,5 @@
 var scenarioSharedFamilyEmail = {
+    id:"SharedFamEmail",
     title: 'Shared Family Email',
     mode: 'Consoidate',
     matchKey: 'Email',
