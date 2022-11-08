@@ -164,12 +164,12 @@
             <select id="selScenario">
                 <option></option>
             </select>
-            <select id="selDeltaView">
+            <select id="selDeltaView" style="display: none;">
                 <option value="merged" selected="true">Merged</option>
                 <option value="start">Start</option>
                 <option value="finish">Finish</option>
             </select>
-            <select id="selStepStart"></select>
+            <select id="selStepStart" style="display: none;"></select>
         </div>
         <div id="outSteps"></div>
         <h1 style="clear: both;">Raw Individuals</h1>
@@ -184,8 +184,9 @@
     <script lang="javascript">
         var currentscenarioIdx = defaultScenario;
         var currentScenario = scenarios[currentscenarioIdx];
-        var currentScenarioStartingStep = 0;
+        var currentScenarioSelectedStep = 0;
         var currentView = 'merged';
+
         var scenarioDD = $('#selScenario');
         
         for(var idx in scenarios)
@@ -202,7 +203,8 @@
         scenarioDD.change(function()
         {
             currentScenario = scenarios[this.value];
-            currentScenarioStartingStep = 0;
+            currentScenarioSelectedStep = 0;
+            currentView = 'merged';
 
             uiRenderCurrentSelections();
         });
@@ -218,7 +220,7 @@
         var stepDD = $('#selStepStart');
 
         stepDD.change(function(){
-            currentScenarioStartingStep = Number.parseInt(this.value);
+            currentScenarioSelectedStep = Number.parseInt(this.value);
 
             uiRenderCurrentSelections();
         });
@@ -229,7 +231,7 @@
 
             if(currentScenario !== undefined && currentScenario !== null)
             {
-                var tmpCurScenarioStartStep = currentScenarioStartingStep
+                var tmpCurScenarioStartStep = currentScenarioSelectedStep
 
                 // if there is only one step
                 if(currentScenario.steps.length == 1)
@@ -262,7 +264,7 @@
             }
             else
             {
-                stepDD.show();
+                //stepDD.show();
 
                 for(var i = 0; i < scenario.steps.length; i++)
                 {
@@ -270,7 +272,7 @@
                     stepDD.append(curOption);
                 }
 
-                stepDD.val(currentScenarioStartingStep);
+                stepDD.val(currentScenarioSelectedStep);
             }
         }
 
@@ -285,7 +287,7 @@
             {
                 var isCurrentSelectedStep = false;
 
-                if(i == currentScenarioStartingStep)
+                if(i == currentScenarioSelectedStep)
                 {
                     isCurrentSelectedStep = true;
                 }
@@ -297,7 +299,7 @@
                     addPointerToGroup = true;
                 }
 
-                if(i == currentScenarioStartingStep - 1 && currentView == 'finish')
+                if(i == currentScenarioSelectedStep - 1 && currentView == 'finish')
                 {
                     addPointerToGroup = true;
                 }
@@ -312,7 +314,7 @@
                         (
                                 function()
                                 { 
-                                    currentScenarioStartingStep = index;
+                                    currentScenarioSelectedStep = index;
                                     currentView = "merged";
                                     uiRenderCurrentSelections();
                                 }
@@ -326,19 +328,19 @@
                     isInCurrentGroup = true;
                 }
 
-                if((currentView == 'start' || currentView == 'merged' ) && i == currentScenarioStartingStep + 1)
+                if((currentView == 'start' || currentView == 'merged' ) && i == currentScenarioSelectedStep + 1)
                 {
                     isInCurrentGroup = true;
                 }
 
-                if(currentView == 'finish' && i == currentScenarioStartingStep - 1)
+                if(currentView == 'finish' && i == currentScenarioSelectedStep - 1)
                 {
                     isInCurrentGroup = true;
                 }
 
                 (function(index){
                     outStepDiv.click(function(){ 
-                        currentScenarioStartingStep = index;
+                        currentScenarioSelectedStep = index;
 
                         if(index == currentScenario.steps.length - 1)
                         {
