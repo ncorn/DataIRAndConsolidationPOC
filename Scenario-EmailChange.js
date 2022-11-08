@@ -1,4 +1,5 @@
 var scenarioMultipleEmails = {
+    id: 'EmailChange',
     title: 'Changing Emails',
     mode: 'Consoidate',
     matchKey: 'Email',

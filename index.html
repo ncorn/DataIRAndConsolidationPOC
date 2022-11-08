@@ -126,6 +126,8 @@
             }
         </style>
 
+        <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+
         <script lang="javascript">
             var showDeltas = true;
             var scenarios = [];
@@ -142,8 +144,25 @@
                 'ffd9f7',
                 'ffd9da'
             ];
+
+            $(document).ready(function(){
+                var qsScenario = new URLSearchParams(window.location.search).get('scenario');
+
+                if(qsScenario !== undefined && qsScenario != null)
+                {
+                    for(var idx in scenarios)
+                    {
+                        if(scenarios[idx].id == qsScenario)
+                        {
+                            currentscenarioIdx = idx;
+                            currentScenario = scenarios[currentscenarioIdx];
+                        }
+                    }
+                }
+
+                uiRenderCurrentSelections();
+            });
         </script>
-        <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
         
         <!-- <script src="Scenario-Debug.js"></script> -->
         <script src="Scenario-MultipleLeads.js"></script>
@@ -232,6 +251,7 @@
             if(currentScenario !== undefined && currentScenario !== null)
             {
                 var tmpCurScenarioStartStep = currentScenarioSelectedStep
+                scenarioDD.val(currentscenarioIdx);
 
                 // if there is only one step
                 if(currentScenario.steps.length == 1)
@@ -1008,7 +1028,5 @@
                 }
             }
         }
-
-        uiRenderCurrentSelections();
     </script>
 </html>
