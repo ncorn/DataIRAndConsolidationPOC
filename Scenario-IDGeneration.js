@@ -98,6 +98,56 @@ scenarios.push({
 });
 
 scenarios.push({
+    id: 'IDGenClusterValue-Succession-Update',
+    title: 'IR - Cluster ID Gen - Succession - Update',
+    mode: 'Consoidate',
+    matchKey: 'Email',
+    steps: 
+    [
+        {
+            title: 'Initial Data',
+            description: '',
+            data:
+            [
+                { color: 'fffead', object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'C', Email: 'Throwaway@Domain.com', last_updated: '2022-10-04' },
+                { color: 'ccffcf', object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'C', Email: 'Throwaway@Domain.com', last_updated: '2022-10-03' },
+                { color: 'cccfff', object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'C', Email: 'Throwaway@Domain.com', last_updated: '2022-10-02' },
+            ]
+        },
+        {
+            title: 'Succession Update 1',
+            description: '',
+            data:
+            [
+                { color: 'fffead', object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'C', Email: 'Throwaway@Domain.com', last_updated: '2022-10-04' },
+                { color: 'ccffcf', object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'C', Email: 'Throwaway@Domain.com', last_updated: '2022-10-03' },
+                { color: 'cccfff', object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'C', Email: 'School@Domain.com', last_updated: '2022-10-05' },
+            ]
+        },
+        {
+            title: 'Succession Update 2',
+            description: '',
+            data:
+            [
+                { color: 'fffead', object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'C', Email: 'Throwaway@Domain.com', last_updated: '2022-10-04' },
+                { color: 'ccffcf', object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'C', Email: 'Home@Domain.com', last_updated: '2022-10-06' },
+                { color: 'cccfff', object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'C', Email: 'School@Domain.com', last_updated: '2022-10-05' },
+            ]
+        },
+        {
+            title: 'Succession Update 2',
+            description: '',
+            data:
+            [
+                { color: 'fffead', object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'C', Email: 'Work@Domain.com', last_updated: '2022-10-07' },
+                { color: 'ccffcf', object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'C', Email: 'Home@Domain.com', last_updated: '2022-10-06' },
+                { color: 'cccfff', object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'C', Email: 'School@Domain.com', last_updated: '2022-10-05' },
+            ]
+        }
+    ]
+});
+
+scenarios.push({
     id: 'IDGenClusterValue-Takeover',
     title: 'IR - Cluster ID Gen - Takeover',
     mode: 'Consoidate',
