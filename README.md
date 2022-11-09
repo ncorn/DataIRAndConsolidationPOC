@@ -18,13 +18,13 @@ New scenario files can be created from "Scenario-Example.js". This file contains
 
 Once the new scenario file is complete the new scenario file must be included in index.html. This must be done in the section marked for scenario files.
 
-'''
+```
 <script src="Scenario-Example.js"></script>
-'''
+```
 
 3. Add the data steps to the scenario object
 
-'''
+```
 
 scenarios.push(
     {
@@ -48,4 +48,4 @@ scenarios.push(
     }
 );
 
-'''
+```
