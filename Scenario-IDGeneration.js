@@ -156,3 +156,61 @@ scenarios.push({
         }
     ]
 });
+
+scenarios.push({
+    id: 'IDGenClusterValue-Hop',
+    title: 'IR - Cluster ID Gen - Hop',
+    mode: 'Consoidate',
+    matchKey: 'Email',
+    steps: 
+    [
+        {
+            title: 'Initial Data',
+            description: '',
+            data:
+            [
+                { color: 'fffead', object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'C', Email: 'NathanCGeneral@Domain.com', last_updated: '2022-10-03' },
+                { color: 'ccffcf', object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'C', Email: 'NathanCHome@Domain.com', last_updated: '2022-10-03' },
+                { color: 'cccfff', object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'C', Email: 'NathanCWork@Domain.com', last_updated: '2022-10-03' },
+            ]
+        },
+        {
+            title: 'Add new Contact',
+            description: '',
+            data:
+            [
+                { color: 'fffead', object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'C', Email: 'NathanCGeneral@Domain.com', last_updated: '2022-10-03' },
+                { color: 'ccffcf', object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'C', Email: 'NathanCHome@Domain.com', last_updated: '2022-10-03' },
+                { color: 'cccfff', object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'C', Email: 'NathanCWork@Domain.com', last_updated: '2022-10-03' },
+
+                { color: 'c7feff', object_type: 'Contact', id: 'C4', FirstName: 'Nathan', LastName: 'C', Email: 'NathanCGeneral@Domain.com', last_updated: '2022-10-04' },
+            ]
+        },
+        {
+            title: 'Cluster Hop 1',
+            description: '',
+            data:
+            [
+                { color: 'fffead', object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'C', Email: 'NathanCGeneral@Domain.com', last_updated: '2022-10-03' },
+                { color: 'ccffcf', object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'C', Email: 'NathanCHome@Domain.com', last_updated: '2022-10-03' },
+                { color: 'cccfff', object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'C', Email: 'NathanCWork@Domain.com', last_updated: '2022-10-03' },
+
+                { color: 'c7feff', object_type: 'Contact', id: 'C4', FirstName: 'Nathan', LastName: 'C', Email: 'NathanCHome@Domain.com', last_updated: '2022-10-05' },
+
+            ]
+        },
+        {
+            title: 'Cluster Hop 2',
+            description: '',
+            data:
+            [
+                { color: 'fffead', object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'C', Email: 'NathanCGeneral@Domain.com', last_updated: '2022-10-03' },
+                { color: 'ccffcf', object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'C', Email: 'NathanCHome@Domain.com', last_updated: '2022-10-03' },
+                { color: 'cccfff', object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'C', Email: 'NathanCWork@Domain.com', last_updated: '2022-10-03' },
+
+                { color: 'c7feff', object_type: 'Contact', id: 'C4', FirstName: 'Nathan', LastName: 'C', Email: 'NathanCWork@Domain.com', last_updated: '2022-10-06' },
+
+            ]
+        }
+    ]
+});
