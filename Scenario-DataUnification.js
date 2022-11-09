@@ -1,5 +1,5 @@
 scenarios.push({
-    id:"DataUnification-Mixing",
+    id: "DataUnification-Mixing",
     title: 'Data Unification - Mixing',
     mode: 'Consoidate',
     matchKey: 'Email',
@@ -20,7 +20,7 @@ scenarios.push({
 });
 
 scenarios.push({
-    id:"DataUnification-Masking",
+    id: "DataUnification-Masking",
     title: 'Data Unification - Masking',
     mode: 'Consoidate',
     matchKey: 'Email',
@@ -51,6 +51,28 @@ scenarios.push({
             [
                 { color: 'fffead', object_type: 'Contact', id: 'C1', FirstName: 'Susan', LastName: 'Johnson', Email: 'Susan.Johnson@mailprovider.com', last_updated: '2022-10-01' },
                 { color: 'ccffcf', object_type: 'Lead', id: 'L1', FirstName: 'Suzie', LastName: 'Smith', Email: 'Susan.Johnson@mailprovider.com', last_updated: '2022-10-03' },
+            ]
+        }
+    ]
+});
+
+scenarios.push({
+    id: "DataUnification-NonOverlappingData",
+    title: 'Data Unification - Non-Overlapping Data',
+    mode: 'Consoidate',
+    matchKey: 'Email',
+    steps: 
+    [
+        {
+            title: 'Initial Data',
+            description: '',
+            data:
+            [
+                { color: 'c7feff', object_type: 'Contact', id: 'C0', FirstName: 'Nathan', LastName: 'Smith', Email: 'NathanS@domain.com.com', last_updated: '2022-10-05'},
+                { color: 'fffead', object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'Smith', Email: 'NathanS@domain.com.com', last_updated: '2022-10-01', Salutation: 'Mr' },
+                { color: 'ccffcf', object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'Smith', Email: 'NathanS@domain.com.com', last_updated: '2022-10-02', Suffix: 'Sr' },
+                { color: 'cccfff', object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'Smith', Email: 'NathanS@domain.com.com', last_updated: '2022-10-03', Title: 'Software Architect' },
+                { color: 'ffcccc', object_type: 'Contact', id: 'C4', FirstName: 'Nathan', LastName: 'Smith', Email: 'NathanS@domain.com.com', last_updated: '2022-10-04', YearsOfService: 11 },
             ]
         }
     ]
