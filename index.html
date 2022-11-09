@@ -752,11 +752,11 @@
                     }
 
                     var curVal = curObj[key];
-                    var curColor = curObj.color;
+                    var curDataColor = curObj.color;
 
                     if(curVal !== undefined && curVal !== null)
                     {
-                        masterObj[key].push({ color: curColor, val: curVal });
+                        masterObj[key].push({ color: curDataColor, val: curVal });
                     }
                 }
             }
@@ -782,7 +782,7 @@
             for(var dataKey in data)
             {
                 var curData = data[dataKey];
-                var curColor = curData.color;
+                var curDataColor = curData.color;
                 var rank = dataKey;
 
                 var row = $('<tr></tr>');
@@ -807,28 +807,30 @@
 
                 if(showRank)
                 {
-                    row.append('<td class="cellData" style="background-color: #' + curColor + '">' + rank + '</td>');
+                    row.append('<td class="cellData" style="background-color: #' + curDataColor + '">' + rank + '</td>');
                 }
 
                 for(var masterKey in masterObj)
                 {
+                    var tmpCellColor = curDataColor;
+
                     if(!excludedKeys.includes(masterKey))
                     {
                         var curVal = curData[masterKey];
 
                         if(curVal === undefined)
                         {
-                            curColor = 'efefef';
+                            tmpCellColor = 'efefef';
                         }
 
                         if(curData.colorMap)
                         {
-                            curColor = curData.colorMap[masterKey] ?? curColor;
+                            tmpCellColor = curData.colorMap[masterKey] ?? tmpCellColor;
                         }
 
                         if(Array.isArray(curVal))
                         {
-                            var list = $('<td class="cellData" style="background-color: #' + curColor + '"><ul></ul></td>');
+                            var list = $('<td class="cellData" style="background-color: #' + tmpCellColor + '"><ul></ul></td>');
 
 
                             for(var idx in curVal)
@@ -847,7 +849,7 @@
                         }
                         else
                         {
-                            var col = row.append('<td class="cellData" style="background-color: #' + curColor + '">' + curVal + '</td>');
+                            var col = row.append('<td class="cellData" style="background-color: #' + tmpCellColor + '">' + curVal + '</td>');
                         }
                     }
                 }
