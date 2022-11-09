@@ -1,26 +1,4 @@
 scenarios.push({
-    id: 'IDGenClusterValue',
-    title: '',
-    mode: 'Consoidate',
-    matchKey: 'Email',
-    steps: 
-    [
-        {
-            title: 'Initial Data',
-            description: '',
-            data: [
-                { color: 'fffead', object_type: 'Lead', id: 'L1', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', last_updated: '2022-10-01' },
-                { color: 'ccffcf', object_type: 'Lead', id: 'L2', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', last_updated: '2022-10-02' },
-
-                { color: 'cccfff', object_type: 'Lead', id: 'L3', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', last_updated: '2022-10-03' },
-                { color: 'ffcccc', object_type: 'Lead', id: 'L4', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', last_updated: '2022-10-04' },
-            ]
-        }
-    ]
-});
-
-
-scenarios.push({
     id: 'IDGenClusterValue-Rekey',
     title: 'IR - Cluster ID Gen - Rekey',
     mode: 'Consoidate',
