@@ -9,6 +9,11 @@ scenarios.push({
     title: 'Journey History - Rekey',
     mode: 'PickAWinner',
     matchKey: 'Email',
+    consolidationSortKeys: 
+    [  
+        { key: 'object_type', direction: 'asc'}, 
+        { key: 'last_updated', direction: 'desc'} 
+    ],
     steps: 
     [
         {
@@ -58,7 +63,7 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Succession',
     title: 'IR - Cluster ID Gen - Succession',
-    mode: 'Consoidate',
+    mode: 'Consolidate',
     matchKey: 'Email',
     steps: 
     [
@@ -106,7 +111,7 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Succession-Update',
     title: 'IR - Cluster ID Gen - Succession - Update',
-    mode: 'Consoidate',
+    mode: 'Consolidate',
     matchKey: 'Email',
     steps: 
     [
@@ -156,7 +161,7 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Takeover',
     title: 'IR - Cluster ID Gen - Takeover',
-    mode: 'Consoidate',
+    mode: 'Consolidate',
     matchKey: 'Email',
     steps: 
     [
@@ -216,7 +221,7 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Hop',
     title: 'IR - Cluster ID Gen - Hop',
-    mode: 'Consoidate',
+    mode: 'Consolidate',
     matchKey: 'Email',
     steps: 
     [

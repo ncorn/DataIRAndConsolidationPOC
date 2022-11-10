@@ -163,6 +163,11 @@
                 'ffd9da'
             ];
 
+            var defaultConsolidationSortKeys = [
+                { key: 'object_type', direction: 'asc'},
+                { key: 'last_updated', direction: 'desc'} 
+            ];
+
             $(document).ready(function(){
                 var qsScenario = new URLSearchParams(window.location.search).get('scenario');
 
@@ -545,7 +550,7 @@
             return 4294967296 * (2097151 & h2) + (h1>>>0);
         };
 
-        function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode){
+        function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, consolidationSortKeys){
             // get the raw data
             var stepRawData = deepClone(data);
 
@@ -616,7 +621,7 @@
             for(var idx in clusters)
             {
                 var clst = clusters[idx];
-                var curConsIndv = ConsolidateData(clst.individuals, consolidationMode);
+                var curConsIndv = ConsolidateData(clst.individuals, consolidationMode, consolidationSortKeys);
 
                 clst.unifiedIndividualId = curConsIndv.id;
 
@@ -659,9 +664,9 @@
             }
         }
 
-        function ConsolidateData(arrayData, consolidationMode)
+        function ConsolidateData(arrayData, consolidationMode, consolidationSortKeys)
         {
-            dataSortObjArrayByKeys(arrayData, [  { key: 'object_type', direction: 'asc'}, { key: 'last_updated', direction: 'desc'} ]);
+            dataSortObjArrayByKeys(arrayData, consolidationSortKeys);
             var masterObj = getCompleteProperties(arrayData);
             var retObj = { colorMap: {}, isUnifiedIndv: true };
 
@@ -920,6 +925,7 @@
         {
             var matchKey = scenario.matchKey;
             var consolidationMode = scenario.mode;
+            var consolidationSortKeys = scenario.consolidationSortKeys ?? defaultConsolidationSortKeys;
             var inputDataStart = scenario.steps[startStepIdx].data;
 
             var idKeyRaw = 'id';
@@ -929,13 +935,13 @@
             //var idKeyConsIndv = idKeyClust;
 
             // compute all the data - cluster data, consolidate data
-            var computedDataStart = crteateDataFromScenarioRawData(inputDataStart, matchKey, consolidationMode);
+            var computedDataStart = crteateDataFromScenarioRawData(inputDataStart, matchKey, consolidationMode, consolidationSortKeys);
             var finalData = computedDataStart;
 
             if(scenario.steps.length > 1)
             {
                 var inputDataFinish = scenario.steps[finishStepIdx].data;
-                var computedDataFinish = crteateDataFromScenarioRawData(inputDataFinish, matchKey, consolidationMode);
+                var computedDataFinish = crteateDataFromScenarioRawData(inputDataFinish, matchKey, consolidationMode, consolidationSortKeys);
 
                 dataCalculateDeltas(computedDataStart.dataRaw, computedDataFinish.dataRaw, idKeyRaw);
                 dataCalculateDeltas(computedDataStart.dataClusters, computedDataFinish.dataClusters, idKeyClust)
