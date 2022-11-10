@@ -923,8 +923,8 @@
 
         function executePipeline(scenario, startStepIdx, finishStepIdx, outputStep)
         {
-            var matchKey = scenario.matchKey;
-            var consolidationMode = scenario.mode;
+            var matchKey = scenario.irMatchKey;
+            var consolidationMode = scenario.consolidationMode;
             var consolidationSortKeys = scenario.consolidationSortKeys ?? defaultConsolidationSortKeys;
             var inputDataStart = scenario.steps[startStepIdx].data;
 

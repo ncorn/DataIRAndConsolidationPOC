@@ -1,8 +1,8 @@
 var scen4 = {
     id: 'MultLeads',
     title: 'Multiple Leads',
-    mode: 'Consolidate',
-    matchKey: 'Email',
+    consolidationMode: 'Consolidate',
+    irMatchKey: 'Email',
     steps: 
     [
         {

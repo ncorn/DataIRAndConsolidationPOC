@@ -1,8 +1,8 @@
 var scen21 = {
     id: 'MultContactUpdate',
     title: 'Update Matching Contacts',
-    mode: 'Consolidate',
-    matchKey: 'Email',
+    consolidationMode: 'Consolidate',
+    irMatchKey: 'Email',
     steps: 
     [
         {

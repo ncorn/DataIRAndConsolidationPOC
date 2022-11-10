@@ -2,8 +2,8 @@ scenarios.push(
     {
         id: '{ID of the new scenario}',
         title: '{Title of this scenario}',
-        mode: 'Consolidate', //{ Mode used to consolidate data for unified individuals: 'Consolidate' || 'PickAWinner'},
-        matchKey: 'Email', // Property of an object used to match individuals together. Defaulting to Email for current usecases.
+        consolidationMode: 'Consolidate', //{ Mode used to consolidate data for unified individuals: 'Consolidate' || 'PickAWinner'},
+        irMatchKey: 'Email', // Property of an object used to match individuals together. Defaulting to Email for current usecases.
         steps: 
         [
             {

@@ -30,8 +30,8 @@ scenarios.push(
     {
         id: '...',
         title: '...',
-        mode: 'Consolidate',
-        matchKey: 'Email', 
+        consolidationMode: 'Consolidate',
+        irMatchKey: 'Email', 
         steps: 
         [
             // Add new steps of a scenario HERE <---

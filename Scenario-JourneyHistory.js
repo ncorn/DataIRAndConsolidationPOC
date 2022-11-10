@@ -7,8 +7,8 @@ var journeyHistoryStep1 = [
 scenarios.push({
     id: 'JourneyHistory-Rekey',
     title: 'Journey History - Rekey',
-    mode: 'PickAWinner',
-    matchKey: 'Email',
+    consolidationMode: 'PickAWinner',
+    irMatchKey: 'Email',
     consolidationSortKeys: 
     [  
         { key: 'object_type', direction: 'asc'}, 
@@ -63,8 +63,8 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Succession',
     title: 'IR - Cluster ID Gen - Succession',
-    mode: 'Consolidate',
-    matchKey: 'Email',
+    consolidationMode: 'Consolidate',
+    irMatchKey: 'Email',
     steps: 
     [
         {
@@ -111,8 +111,8 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Succession-Update',
     title: 'IR - Cluster ID Gen - Succession - Update',
-    mode: 'Consolidate',
-    matchKey: 'Email',
+    consolidationMode: 'Consolidate',
+    irMatchKey: 'Email',
     steps: 
     [
         {
@@ -161,8 +161,8 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Takeover',
     title: 'IR - Cluster ID Gen - Takeover',
-    mode: 'Consolidate',
-    matchKey: 'Email',
+    consolidationMode: 'Consolidate',
+    irMatchKey: 'Email',
     steps: 
     [
         {
@@ -221,8 +221,8 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Hop',
     title: 'IR - Cluster ID Gen - Hop',
-    mode: 'Consolidate',
-    matchKey: 'Email',
+    consolidationMode: 'Consolidate',
+    irMatchKey: 'Email',
     steps: 
     [
         {

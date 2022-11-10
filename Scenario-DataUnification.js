@@ -1,8 +1,8 @@
 scenarios.push({
     id: "DataUnification-Mixing",
     title: 'Data Unification - Mixing',
-    mode: 'Consolidate',
-    matchKey: 'Email',
+    consolidationMode: 'Consolidate',
+    irMatchKey: 'Email',
     steps: 
     [
         {
@@ -22,8 +22,8 @@ scenarios.push({
 scenarios.push({
     id: "DataUnification-Masking",
     title: 'Data Unification - Masking',
-    mode: 'Consolidate',
-    matchKey: 'Email',
+    consolidationMode: 'Consolidate',
+    irMatchKey: 'Email',
     steps: 
     [
         {
@@ -59,8 +59,8 @@ scenarios.push({
 scenarios.push({
     id: "DataUnification-NonOverlappingData",
     title: 'Data Unification - Non-Overlapping Data',
-    mode: 'Consolidate',
-    matchKey: 'Email',
+    consolidationMode: 'Consolidate',
+    irMatchKey: 'Email',
     steps: 
     [
         {

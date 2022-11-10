@@ -1,8 +1,8 @@
 var scenarioMultipleEmails = {
     id: 'EmailChange',
     title: 'Changing Emails',
-    mode: 'Consolidate',
-    matchKey: 'Email',
+    consolidationMode: 'Consolidate',
+    irMatchKey: 'Email',
     steps: 
     [
         {
