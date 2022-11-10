@@ -110,6 +110,7 @@ scenarios.push({
     title: 'Journey History - Takeover',
     consolidationMode: 'PickAWinner',
     irMatchKey: 'Email',
+    uidMode: 'Member',
     consolidationSortKeys: 
     [  
         { key: 'object_type', direction: 'asc'}, 
@@ -133,6 +134,39 @@ scenarios.push({
                 { color: 'fffead', object_type: 'Lead', id: 'L1', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', created_date: '2022-01-04', last_updated: '2022-10-01', JourneyHistory: journeyHistoryStepSend5Emails },
                 { color: 'ccffcf', object_type: 'Lead', id: 'L2', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', created_date: '2022-01-03', last_updated: '2022-10-02' },
                 { color: 'cccfff', object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', created_date: '2022-01-02', last_updated: '2022-10-03', JourneyHistory: [] },
+            ]
+        }
+    ]
+});
+
+scenarios.push({
+    id: 'JourneyHistory-Succession',
+    title: 'Journey History - Succession',
+    consolidationMode: 'PickAWinner',
+    irMatchKey: 'Email',
+    uidMode: 'Member',
+    consolidationSortKeys: 
+    [  
+        { key: 'object_type', direction: 'asc'}, 
+        { key: 'created_date', direction: 'desc'} 
+    ],
+    steps: 
+    [
+        {
+            title: 'Initial Data',
+            description: '',
+            data:[
+                { color: 'fffead', object_type: 'Lead', id: 'L1', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', created_date: '2022-01-04', last_updated: '2022-10-01' },
+                { color: 'ccffcf', object_type: 'Lead', id: 'L2', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', created_date: '2022-01-03', last_updated: '2022-10-02' },
+                { color: 'cccfff', object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', created_date: '2022-01-02', last_updated: '2022-10-03', JourneyHistory: journeyHistoryStepSend5Emails },
+            ]
+        },
+        {
+            title: 'Remove Contact',
+            description: '',
+            data:[
+                { color: 'fffead', object_type: 'Lead', id: 'L1', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', created_date: '2022-01-04', last_updated: '2022-10-01' },
+                { color: 'ccffcf', object_type: 'Lead', id: 'L2', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', created_date: '2022-01-03', last_updated: '2022-10-02' },
             ]
         }
     ]
