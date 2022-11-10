@@ -550,7 +550,7 @@
             return 4294967296 * (2097151 & h2) + (h1>>>0);
         };
 
-        function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, consolidationSortKeys){
+        function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, consolidationSortKeys, uidMode){
             // get the raw data
             var stepRawData = deepClone(data);
 
@@ -621,10 +621,21 @@
             for(var idx in clusters)
             {
                 var clst = clusters[idx];
-                var curConsIndv = ConsolidateData(clst.individuals, consolidationMode, consolidationSortKeys);
+                var curConsIndv = dataConsolidateAttributes(clst.individuals, consolidationMode, consolidationSortKeys);
                 curConsIndv.clusterId = curCluster.clusterId;
 
-                clst.unifiedIndividualId = curConsIndv.id;
+                clst.topRankId = curConsIndv.id;
+
+                if(uidMode == 'Cluster')
+                {
+                    clst.UID = curCluster.clusterId;
+                    curConsIndv.UID = curCluster.clusterId;
+                }
+                else if(uidMode == 'Member')
+                {
+                    clst.UID = curConsIndv.id;
+                    curConsIndv.UID = curConsIndv.id;
+                }
 
                 consolidatedIndividuals.push(curConsIndv);
             }
@@ -650,7 +661,7 @@
                 var curCluster = dataObj.dataClusters[idx];
                 var table = outputTableFromObjectArray(curCluster.individuals, 'outGroupedData', true, true);
 
-                var clusterRow = $('<tr class="rowClusterInfo"><td colspan="100"><b>Unified Individual Id:</b> ' + curCluster.unifiedIndividualId + ', <b>Cluster ID:</b> ' + curCluster.clusterId + ', <b>Match Value:</b> ' + curCluster.matchValue + ', <b>Delta:</b> ' + curCluster.delta + '</td></tr>');
+                var clusterRow = $('<tr class="rowClusterInfo"><td colspan="100"><b>Top Rank ID:</b> ' + curCluster.topRankId + ', <b>Cluster ID:</b> ' + curCluster.clusterId + ', <b>Match Value:</b> ' + curCluster.matchValue + ', <b>Delta:</b> ' + curCluster.delta + '</td></tr>');
                 table.prepend(clusterRow);
 
                 if(curCluster.delta == 'removed')
@@ -665,7 +676,7 @@
             }
         }
 
-        function ConsolidateData(arrayData, consolidationMode, consolidationSortKeys)
+        function dataConsolidateAttributes(arrayData, consolidationMode, consolidationSortKeys)
         {
             dataSortObjArrayByKeys(arrayData, consolidationSortKeys);
             var masterObj = getCompleteProperties(arrayData);
@@ -928,21 +939,20 @@
             var consolidationMode = scenario.consolidationMode;
             var consolidationSortKeys = scenario.consolidationSortKeys ?? defaultConsolidationSortKeys;
             var inputDataStart = scenario.steps[startStepIdx].data;
+            var uidMode = scenario.uidMode ?? 'Member';
 
             var idKeyRaw = 'id';
-            var idKeyClust = 'unifiedIndividualId';
-            //var idKeyClust = 'clusterId';
-            var idKeyConsIndv = 'id';
-            //var idKeyConsIndv = idKeyClust;
+            var idKeyClust = 'UID';
+            var idKeyConsIndv = 'UID';
 
             // compute all the data - cluster data, consolidate data
-            var computedDataStart = crteateDataFromScenarioRawData(inputDataStart, matchKey, consolidationMode, consolidationSortKeys);
+            var computedDataStart = crteateDataFromScenarioRawData(inputDataStart, matchKey, consolidationMode, consolidationSortKeys, uidMode);
             var finalData = computedDataStart;
 
             if(scenario.steps.length > 1)
             {
                 var inputDataFinish = scenario.steps[finishStepIdx].data;
-                var computedDataFinish = crteateDataFromScenarioRawData(inputDataFinish, matchKey, consolidationMode, consolidationSortKeys);
+                var computedDataFinish = crteateDataFromScenarioRawData(inputDataFinish, matchKey, consolidationMode, consolidationSortKeys, uidMode);
 
                 dataCalculateDeltas(computedDataStart.dataRaw, computedDataFinish.dataRaw, idKeyRaw);
                 dataCalculateDeltas(computedDataStart.dataClusters, computedDataFinish.dataClusters, idKeyClust)
@@ -1006,7 +1016,7 @@
             outputTablesForEachDataType(finalData);
         }
 
-        function dataCombineDataIterations(dataIterationOne, dataIterationTwo, idKeyRawData, idKeyClusterData, idKeyConsolidatedIndividuals)
+        function dataCombineDataIterations(dataIterationOne, dataIterationTwo, idKeyRawData, idKeyClusterData, idKeyConsolidatedIndividuals, uidMode)
         {
             var output = {
                 dataRaw: deepClone(dataIterationOne.dataRaw),
