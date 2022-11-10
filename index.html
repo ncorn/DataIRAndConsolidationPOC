@@ -622,6 +622,7 @@
             {
                 var clst = clusters[idx];
                 var curConsIndv = ConsolidateData(clst.individuals, consolidationMode, consolidationSortKeys);
+                curConsIndv.clusterId = curCluster.clusterId;
 
                 clst.unifiedIndividualId = curConsIndv.id;
 
