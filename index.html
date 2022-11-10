@@ -624,14 +624,14 @@
             {
                 var clst = clusters[idx];
                 var curConsIndv = dataConsolidateAttributes(clst.individuals, consolidationMode, consolidationSortKeys);
-                curConsIndv.clusterId = curCluster.clusterId;
+                curConsIndv.clusterId = clst.clusterId;
 
                 clst.topRankId = curConsIndv.id;
 
                 if(uidMode == 'Cluster')
                 {
-                    clst.UID = curCluster.clusterId;
-                    curConsIndv.UID = curCluster.clusterId;
+                    clst.UID = clst.clusterId;
+                    curConsIndv.UID = clst.clusterId;
                 }
                 else if(uidMode == 'Member')
                 {
