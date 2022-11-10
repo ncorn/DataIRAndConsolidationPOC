@@ -124,6 +124,24 @@
             .stepgroup .scenarioStep, .stepgroup .scenarioStepPointer{
                 margin-top: 0;
             }
+
+            .objArray{
+                width: auto;
+                border: none;
+                margin: 0;
+                padding: 0;
+                white-space: nowrap;
+            }
+
+            .objArray td{
+                border: none;
+                padding: 0 2px 0 2px;
+                white-space: nowrap;
+            }
+
+            .objArray .rowHeader{
+                display: none;
+            }
         </style>
 
         <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
@@ -171,6 +189,7 @@
         <!-- <script src="Scenario-Debug.js"></script> -->
         <script src="Scenario-IDGeneration.js"></script>
         <script src="Scenario-DataUnification.js"></script>
+        <script src="Scenario-JourneyHistory.js"></script>
         <script src="Scenario-MultipleLeads.js"></script>
         <script src="Scenario-SharedFamilyEmail.js"></script>
         <script src="Scenario-NameChange.js"></script>
@@ -526,7 +545,7 @@
             return 4294967296 * (2097151 & h2) + (h1>>>0);
         };
 
-        function crteateDataFromScenarioRawData(data, irMatchKey){
+        function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode){
             // get the raw data
             var stepRawData = deepClone(data);
 
@@ -597,7 +616,7 @@
             for(var idx in clusters)
             {
                 var clst = clusters[idx];
-                var curConsIndv = ConsolidateData(clst.individuals, 'Consolidate');
+                var curConsIndv = ConsolidateData(clst.individuals, consolidationMode);
 
                 clst.unifiedIndividualId = curConsIndv.id;
 
@@ -646,13 +665,13 @@
             var masterObj = getCompleteProperties(arrayData);
             var retObj = { colorMap: {}, isUnifiedIndv: true };
 
-            if(mode == 'Consolidate')
+            // loop through each property
+            for(var masterKey in masterObj)
             {
-                // loop through each property
-                for(var masterKey in masterObj)
-                {
-                    retObj[masterKey] = null;
+                retObj[masterKey] = null;
 
+                if(mode == 'Consolidate')
+                {
                     // find the first available value
                     for(var idx in arrayData)
                     {
@@ -667,6 +686,9 @@
                             break;
                         }
                     }
+                }
+                else if(mode == 'PickAWinner'){
+                    retObj[masterKey] = arrayData[0][masterKey];
                 }
             }
 
@@ -729,14 +751,17 @@
             var data = arrayData;
             var masterObj = getCompleteProperties(arrayData);
 
-            var outContainer = $('#' + outContainerID);
-
-            if(!append)
+            if(outContainerID != null)
             {
-                outContainer.empty();
-            }
+                var outContainer = $('#' + outContainerID);
 
-            outContainer.append(outTable);
+                if(!append)
+                {
+                    outContainer.empty();
+                }
+
+                outContainer.append(outTable);
+            }
 
             // collect all properties
             for(var i = 0; i < data.length; i++)
@@ -828,28 +853,39 @@
                             tmpCellColor = curData.colorMap[masterKey] ?? tmpCellColor;
                         }
 
+                        var outDataCell = $('<td class="cellData" style="background-color: #' + tmpCellColor + '"></td>');
+                        row.append(outDataCell);
+
+
                         if(Array.isArray(curVal))
                         {
-                            var list = $('<td class="cellData" style="background-color: #' + tmpCellColor + '"><ul></ul></td>');
+                            if(1==1){
+                                var outSubData = outputTableFromObjectArray(curVal, null, false, false);
+                                outSubData.addClass('objArray');
+                                outDataCell.append(outSubData);
+                            }
+                            else{
+                                var list = $('<ul class="valArray"></ul>');
+                                outDataCell.append(list);
 
 
-                            for(var idx in curVal)
-                            {
-                                var curItem = curVal[idx]
-
-                                if(typeof curItem === 'object')
+                                for(var idx in curVal)
                                 {
-                                    curItem = JSON.stringify(curItem);
-                                }
+                                    var curItem = curVal[idx]
 
-                                list.append('<li>' + curItem + '</li>');
+                                    if(typeof curItem === 'object')
+                                    {
+                                        curItem = JSON.stringify(curItem);
+                                    }
+
+                                    list.append('<li>' + curItem + '</li>');
+                                }
                             }
 
-                            row.append(list);
                         }
                         else
                         {
-                            var col = row.append('<td class="cellData" style="background-color: #' + tmpCellColor + '">' + curVal + '</td>');
+                            var col = outDataCell.append(curVal ? curVal:'undefined');
                         }
                     }
                 }
@@ -883,6 +919,7 @@
         function executePipeline(scenario, startStepIdx, finishStepIdx, outputStep)
         {
             var matchKey = scenario.matchKey;
+            var consolidationMode = scenario.mode;
             var inputDataStart = scenario.steps[startStepIdx].data;
 
             var idKeyRaw = 'id';
@@ -892,13 +929,13 @@
             //var idKeyConsIndv = idKeyClust;
 
             // compute all the data - cluster data, consolidate data
-            var computedDataStart = crteateDataFromScenarioRawData(inputDataStart, matchKey);
+            var computedDataStart = crteateDataFromScenarioRawData(inputDataStart, matchKey, consolidationMode);
             var finalData = computedDataStart;
 
             if(scenario.steps.length > 1)
             {
                 var inputDataFinish = scenario.steps[finishStepIdx].data;
-                var computedDataFinish = crteateDataFromScenarioRawData(inputDataFinish, matchKey);
+                var computedDataFinish = crteateDataFromScenarioRawData(inputDataFinish, matchKey, consolidationMode);
 
                 dataCalculateDeltas(computedDataStart.dataRaw, computedDataFinish.dataRaw, idKeyRaw);
                 dataCalculateDeltas(computedDataStart.dataClusters, computedDataFinish.dataClusters, idKeyClust)
