@@ -659,7 +659,7 @@
             }
         }
 
-        function ConsolidateData(arrayData, mode)
+        function ConsolidateData(arrayData, consolidationMode)
         {
             dataSortObjArrayByKeys(arrayData, [  { key: 'object_type', direction: 'asc'}, { key: 'last_updated', direction: 'desc'} ]);
             var masterObj = getCompleteProperties(arrayData);
@@ -670,7 +670,7 @@
             {
                 retObj[masterKey] = null;
 
-                if(mode == 'Consolidate')
+                if(consolidationMode == 'Consolidate')
                 {
                     // find the first available value
                     for(var idx in arrayData)
@@ -687,7 +687,7 @@
                         }
                     }
                 }
-                else if(mode == 'PickAWinner'){
+                else if(consolidationMode == 'PickAWinner'){
                     retObj[masterKey] = arrayData[0][masterKey];
                 }
             }
