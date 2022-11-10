@@ -1,7 +1,7 @@
 scenarios.push({
     id: 'IDGenClusterValue-Rekey',
     title: 'IR - Cluster ID Gen - Rekey',
-    mode: 'Consoidate',
+    mode: 'Consolidate',
     matchKey: 'Email',
     steps: 
     [
@@ -52,7 +52,7 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Succession',
     title: 'IR - Cluster ID Gen - Succession',
-    mode: 'Consoidate',
+    mode: 'Consolidate',
     matchKey: 'Email',
     steps: 
     [
@@ -100,7 +100,7 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Succession-Update',
     title: 'IR - Cluster ID Gen - Succession - Update',
-    mode: 'Consoidate',
+    mode: 'Consolidate',
     matchKey: 'Email',
     steps: 
     [
@@ -150,7 +150,7 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Takeover',
     title: 'IR - Cluster ID Gen - Takeover',
-    mode: 'Consoidate',
+    mode: 'Consolidate',
     matchKey: 'Email',
     steps: 
     [
@@ -210,7 +210,7 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Hop',
     title: 'IR - Cluster ID Gen - Hop',
-    mode: 'Consoidate',
+    mode: 'Consolidate',
     matchKey: 'Email',
     steps: 
     [

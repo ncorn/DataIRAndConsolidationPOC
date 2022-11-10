@@ -1,7 +1,7 @@
 var scenarioMultipleEmails = {
     id: 'IndvWithMultEmails',
     title: 'Indv With Multiple Emails',
-    mode: 'Consoidate',
+    mode: 'Consolidate',
     matchKey: 'Email',
     data: [
         { color: 'fffead', object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', last_updated: '2022-10-01' },

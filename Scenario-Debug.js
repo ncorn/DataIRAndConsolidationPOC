@@ -1,6 +1,6 @@
 var scenarioSharedFamilyEmail = {
     title: 'Debugging',
-    mode: 'Consoidate',
+    mode: 'Consolidate',
     matchKey: 'Email',
     steps: 
     [
