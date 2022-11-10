@@ -12,8 +12,8 @@ scenarios.push(
                 data:
                 [
                     // Example Lead & Contact
-                    // { color: 'ffd9f7', object_type: 'Contact', id: 'C1', Email: 'personal@nsmith.com', last_updated: '2022-10-01' },
-                    // { color: 'ffd9f7', object_type: 'Lead', id: 'L1', Email: 'personal@nsmith.com', last_updated: '2022-10-01' },
+                    // { color: 'ffd9f7', _object_type: 'Contact', id: 'C1', Email: 'personal@nsmith.com', _last_updated: '2022-10-01' },
+                    // { color: 'ffd9f7', _object_type: 'Lead', id: 'L1', Email: 'personal@nsmith.com', _last_updated: '2022-10-01' },
                 ]
             },
             {

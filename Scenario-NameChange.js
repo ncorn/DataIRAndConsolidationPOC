@@ -9,8 +9,8 @@ var scnrNameChange = {
             description: '',
             data: 
             [
-                { color: 'fffead', object_type: 'Contact', id: 'C1', FirstName: 'Susan', LastName: 'Johnson', Email: 'Susan.Johnson@mailprovider.com', last_updated: '2022-10-01' },
-                { color: 'ccffcf', object_type: 'Lead', id: 'L1', FirstName: 'Susan', LastName: 'Smith', Email: 'Susan.Johnson@mailprovider.com', last_updated: '2022-10-03' },
+                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Susan', LastName: 'Johnson', Email: 'Susan.Johnson@mailprovider.com', _last_updated: '2022-10-01' },
+                { color: 'ccffcf', _object_type: 'Lead', id: 'L1', FirstName: 'Susan', LastName: 'Smith', Email: 'Susan.Johnson@mailprovider.com', _last_updated: '2022-10-03' },
             ]
         }
     ]

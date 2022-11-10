@@ -5,7 +5,7 @@
                 border-collapse: separate;
                 border: solid 1px #000000;
                 margin-bottom: 20px;
-                width: 800px;
+                /* width: 800px; */
                 border-spacing: 0;
             }
 
@@ -15,6 +15,7 @@
 
             .rowClusterInfo td{
                 padding: 10px;
+                text-align: center;
             }
 
             .rowHeader, .rowClusterInfo{
@@ -166,8 +167,8 @@
             ];
 
             var defaultConsolidationSortKeys = [
-                { key: 'object_type', direction: 'asc'},
-                { key: 'last_updated', direction: 'desc'} 
+                { key: '_object_type', direction: 'asc'},
+                { key: '_last_updated', direction: 'desc'} 
             ];
 
             $(document).ready(function(){
@@ -193,7 +194,7 @@
 ####### All Scenario Information goes In this section
 #######
 ########################################################################################################################-->
-        <!-- <script src="Scenario-Debug.js"></script> -->
+        <script src="Scenario-Debug.js"></script>
         <script src="Scenario-IDGeneration.js"></script>
         <script src="Scenario-DataUnification.js"></script>
         <script src="Scenario-JourneyHistory.js"></script>
