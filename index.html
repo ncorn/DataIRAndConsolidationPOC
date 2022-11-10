@@ -125,15 +125,17 @@
                 margin-top: 0;
             }
 
-            .objArray{
+             .objArray, .objArray tr{
                 width: auto;
+                border-width: 0;
                 border: none;
                 margin: 0;
                 padding: 0;
                 white-space: nowrap;
             }
 
-            .objArray td{
+            .objArray tr td{
+                border-width: 0;
                 border: none;
                 padding: 0 2px 0 2px;
                 white-space: nowrap;
@@ -661,7 +663,7 @@
                 var curCluster = dataObj.dataClusters[idx];
                 var table = outputTableFromObjectArray(curCluster.individuals, 'outGroupedData', true, true);
 
-                var clusterRow = $('<tr class="rowClusterInfo"><td colspan="100"><b>Top Rank ID:</b> ' + curCluster.topRankId + ', <b>Cluster ID:</b> ' + curCluster.clusterId + ', <b>Match Value:</b> ' + curCluster.matchValue + ', <b>Delta:</b> ' + curCluster.delta + '</td></tr>');
+                var clusterRow = $('<tr class="rowClusterInfo"><td colspan="100"><b>Unified Individual ID:</b> ' + curCluster.UID + ', <b>Top Rank ID:</b> ' + curCluster.topRankId + ', <b>Cluster ID:</b> ' + curCluster.clusterId + ', <b>Match Value:</b> ' + curCluster.matchValue + ', <b>Delta:</b> ' + curCluster.delta + '</td></tr>');
                 table.prepend(clusterRow);
 
                 if(curCluster.delta == 'removed')
