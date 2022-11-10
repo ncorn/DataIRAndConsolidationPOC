@@ -86,8 +86,8 @@ scenarios.push({
             description: '',
             data:
             [
-                { color: 'fffead', _object_type: 'Lead', id: 'L1', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', _created_date: '2022-01-04', _last_updated: '2022-10-01', _journey_history: _journey_historyStepSend5Emails },
-                { color: 'ccffcf', _object_type: 'Lead', id: 'L2', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', _created_date: '2022-01-03', _last_updated: '2022-10-02' },
+                { color: 'fffead', _object_type: 'Lead', id: 'L1', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', _created_date: '2022-01-04', _last_updated: '2022-10-01' },
+                { color: 'ccffcf', _object_type: 'Lead', id: 'L2', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', _created_date: '2022-01-03', _last_updated: '2022-10-02', _journey_history: _journey_historyStepSend5Emails },
                 { color: 'cccfff', _object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-02', _last_updated: '2022-10-03', _journey_history: _journey_historySendWaitSend },
                 { color: 'ffcccc', _object_type: 'Contact', id: 'C4', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-01', _last_updated: '2022-10-04' },
             ]
@@ -96,8 +96,8 @@ scenarios.push({
             title: 'Lead Cluster Hop',
             description: '',
             data:[
-                { color: 'fffead', _object_type: 'Lead', id: 'L1', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-04', _last_updated: '2022-10-01', _journey_history: _journey_historyStepSend5Emails },
-                { color: 'ccffcf', _object_type: 'Lead', id: 'L2', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', _created_date: '2022-01-03', _last_updated: '2022-10-02' },
+                { color: 'fffead', _object_type: 'Lead', id: 'L1', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', _created_date: '2022-01-04', _last_updated: '2022-10-01' },
+                { color: 'ccffcf', _object_type: 'Lead', id: 'L2', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-03', _last_updated: '2022-10-02', _journey_history: _journey_historyStepSend5Emails },
                 { color: 'cccfff', _object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-02', _last_updated: '2022-10-03', _journey_history: _journey_historySendWaitSend },
                 { color: 'ffcccc', _object_type: 'Contact', id: 'C4', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-01', _last_updated: '2022-10-04' },
             ]
@@ -123,16 +123,16 @@ scenarios.push({
             description: '',
             data:
             [
-                { color: 'fffead', _object_type: 'Lead', id: 'L1', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', _created_date: '2022-01-04', _last_updated: '2022-10-01', _journey_history: _journey_historyStepSend5Emails },
-                { color: 'ccffcf', _object_type: 'Lead', id: 'L2', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', _created_date: '2022-01-03', _last_updated: '2022-10-02' },
+                { color: 'fffead', _object_type: 'Lead', id: 'L1', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', _created_date: '2022-01-04', _last_updated: '2022-10-01' },
+                { color: 'ccffcf', _object_type: 'Lead', id: 'L2', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', _created_date: '2022-01-03', _last_updated: '2022-10-02', _journey_history: _journey_historyStepSend5Emails },
             ]
         },
         {
             title: 'Lead Cluster Hop',
             description: '',
             data:[
-                { color: 'fffead', _object_type: 'Lead', id: 'L1', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', _created_date: '2022-01-04', _last_updated: '2022-10-01', _journey_history: _journey_historyStepSend5Emails },
-                { color: 'ccffcf', _object_type: 'Lead', id: 'L2', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', _created_date: '2022-01-03', _last_updated: '2022-10-02' },
+                { color: 'fffead', _object_type: 'Lead', id: 'L1', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', _created_date: '2022-01-04', _last_updated: '2022-10-01' },
+                { color: 'ccffcf', _object_type: 'Lead', id: 'L2', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', _created_date: '2022-01-03', _last_updated: '2022-10-02', _journey_history: _journey_historyStepSend5Emails },
                 { color: 'cccfff', _object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', _created_date: '2022-01-02', _last_updated: '2022-10-03', _journey_history: [] },
             ]
         }
