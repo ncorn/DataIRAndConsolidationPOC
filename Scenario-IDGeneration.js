@@ -1,4 +1,76 @@
 scenarios.push({
+    id: 'IDGenClusterValue-Transform',
+    title: 'IR - Cluster ID Gen - Transform',
+    uidMode: 'Cluster',
+    consolidationMode: 'Consolidate',
+    irMatchKey: 'Email',
+    steps: 
+    [
+        {
+            title: 'Initial Data',
+            description: '',
+            data:
+            [
+                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _last_updated: '2022-10-01' },
+            ]
+        },
+        {
+            title: 'Initial Data',
+            description: '',
+            data:
+            [
+                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'Smith', Email: 'personal@nsmith.com', _last_updated: '2022-10-02' },
+            ]
+        }
+    ]
+});
+
+scenarios.push({
+    id: 'IDGenClusterValue-AddSubtract',
+    title: 'IR - Cluster ID Gen - Add/Subtract',
+    consolidationMode: 'Consolidate',
+    irMatchKey: 'Email',
+    steps: 
+    [
+        {
+            title: 'Initial Data',
+            description: '',
+            data:
+            [
+                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _last_updated: '2022-10-01' },
+            ]
+        },
+        {
+            title: 'Append Lead 1',
+            description: '',
+            data:[
+                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _last_updated: '2022-10-01' },
+                { color: 'ccffcf', _object_type: 'Lead', id: 'L2', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _last_updated: '2022-10-02' },
+            ]
+        },
+        {
+            title: 'Append Lead 2',
+            description: '',
+            data:[
+                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _last_updated: '2022-10-01' },
+                { color: 'ccffcf', _object_type: 'Lead', id: 'L2', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _last_updated: '2022-10-02' },
+                { color: 'cccfff', _object_type: 'Lead', id: 'L3', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _last_updated: '2022-10-03' },
+            ]
+        },
+        {
+            title: 'Append Lead 3',
+            description: '',
+            data:[
+                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _last_updated: '2022-10-01' },
+                { color: 'ccffcf', _object_type: 'Lead', id: 'L2', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _last_updated: '2022-10-02' },
+                { color: 'cccfff', _object_type: 'Lead', id: 'L3', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _last_updated: '2022-10-03' },
+                { color: 'ffcccc', _object_type: 'Lead', id: 'L4', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _last_updated: '2022-10-04' },
+            ]
+        }
+    ]
+});
+
+scenarios.push({
     id: 'IDGenClusterValue-Rekey',
     title: 'IR - Cluster ID Gen - Rekey',
     consolidationMode: 'Consolidate',
@@ -99,7 +171,7 @@ scenarios.push({
 
 scenarios.push({
     id: 'IDGenClusterValue-Succession-Update',
-    title: 'IR - Cluster ID Gen - Succession - Update',
+    title: 'IR - Cluster ID Gen - Split:Subtract-Add',
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
@@ -142,6 +214,46 @@ scenarios.push({
                 { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'C', Email: 'Work@Domain.com', _last_updated: '2022-10-07' },
                 { color: 'ccffcf', _object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'C', Email: 'Home@Domain.com', _last_updated: '2022-10-06' },
                 { color: 'cccfff', _object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'C', Email: 'School@Domain.com', _last_updated: '2022-10-05' },
+            ]
+        }
+    ]
+});
+
+scenarios.push({
+    id: 'IDGenClusterValue-Split-Succession-Add',
+    title: 'IR - Cluster ID Gen - Split:Succession-Add',
+    consolidationMode: 'Consolidate',
+    irMatchKey: 'Email',
+    steps: 
+    [
+        {
+            title: 'Initial Data',
+            description: '',
+            data:
+            [
+                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'C', Email: 'Throwaway@Domain.com', _last_updated: '2022-10-04' },
+                { color: 'ccffcf', _object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'C', Email: 'Throwaway@Domain.com', _last_updated: '2022-10-03' },
+                { color: 'cccfff', _object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'C', Email: 'Throwaway@Domain.com', _last_updated: '2022-10-02' },
+            ]
+        },
+        {
+            title: 'Split 1',
+            description: '',
+            data:
+            [
+                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'C', Email: 'Personal@Domain.com', _last_updated: '2022-10-04' },
+                { color: 'ccffcf', _object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'C', Email: 'Throwaway@Domain.com', _last_updated: '2022-10-03' },
+                { color: 'cccfff', _object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'C', Email: 'Throwaway@Domain.com', _last_updated: '2022-10-02' },
+            ]
+        },
+        {
+            title: 'Split 2',
+            description: '',
+            data:
+            [
+                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'C', Email: 'Personal@Domain.com', _last_updated: '2022-10-04' },
+                { color: 'ccffcf', _object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'C', Email: 'Business@Domain.com', _last_updated: '2022-10-03' },
+                { color: 'cccfff', _object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'C', Email: 'Throwaway@Domain.com', _last_updated: '2022-10-02' },
             ]
         }
     ]
