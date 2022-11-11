@@ -153,6 +153,7 @@
             var showDeltas = true;
             var scenarios = [];
             var defaultScenario = 0;
+            var highLightDiffs = true;
 
             var colors = [
                 'ffdbd9',
@@ -218,6 +219,7 @@
             <select id="selScenario">
                 <option></option>
             </select>
+            <label>Highlight Deltas: </label><input type="checkbox" id="chkHighlightDeltas" checked="true" />
             <select id="selDeltaView" style="display: none;">
                 <option value="merged" selected="true">Merged</option>
                 <option value="start">Start</option>
@@ -276,6 +278,15 @@
 
         stepDD.change(function(){
             currentScenarioSelectedStep = Number.parseInt(this.value);
+
+            uiRenderCurrentSelections();
+        });
+
+        var highLightDiffsChk = $('#chkHighlightDeltas');
+
+        highLightDiffsChk.change(function(){
+            highLightDiffs = this.checked;
+            //alert('test');
 
             uiRenderCurrentSelections();
         });
@@ -670,14 +681,17 @@
                 var clusterRow = $('<tr class="rowClusterInfo"><td colspan="100"><b>Unified Individual ID:</b> ' + curCluster.UID + ', <b>Top Rank ID:</b> ' + curCluster.topRankId + ', <b>Cluster ID:</b> ' + curCluster.clusterId + ', <b>Match Value:</b> ' + curCluster.matchValue + ', <b>Delta:</b> ' + curCluster.delta + '</td></tr>');
                 table.prepend(clusterRow);
 
-                if(curCluster.delta == 'removed')
+                if(highLightDiffs)
                 {
-                    table.addClass('removed');
-                }
+                    if(curCluster.delta == 'removed')
+                    {
+                        table.addClass('removed');
+                    }
 
-                if(curCluster.delta == 'added')
-                {
-                    table.addClass('added');
+                    if(curCluster.delta == 'added')
+                    {
+                        table.addClass('added');
+                    }
                 }
             }
         }
@@ -835,24 +849,26 @@
                 var rank = dataKey;
 
                 var row = $('<tr></tr>');
-
-                if(curData.isUnifiedIndv)
-                {
-                    row.addClass('rowConsol');
-                    rank = '';
-                }
-
-                if(curData.delta == 'added')
-                {
-                    row.addClass('added');
-                }
-
-                if(curData.delta == 'removed')
-                {
-                    row.addClass('removed');
-                }
-
                 outTable.append(row);
+
+                if(highLightDiffs)
+                {
+                    if(curData.isUnifiedIndv)
+                    {
+                        row.addClass('rowConsol');
+                        rank = '';
+                    }
+
+                    if(curData.delta == 'added')
+                    {
+                        row.addClass('added');
+                    }
+
+                    if(curData.delta == 'removed')
+                    {
+                        row.addClass('removed');
+                    }
+                }
 
                 if(showRank)
                 {
