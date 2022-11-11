@@ -173,6 +173,7 @@
             ];
 
             $(document).ready(function(){
+                dataAssignScenarioDefaults();
                 var qsScenario = new URLSearchParams(window.location.search).get('scenario');
 
                 if(qsScenario !== undefined && qsScenario != null)
@@ -306,6 +307,16 @@
 
             uiRenderCurrentSelections();
         });
+
+        function dataAssignScenarioDefaults(){
+            for(var idx in scenarios)
+            {
+                var curScen = scenarios[idx];
+
+                curScen.uidMode = curScen.uidMode ?? 'Member';
+                curScen.consolidationSortKeys = curScen.consolidationSortKeys ?? defaultConsolidationSortKeys;
+            }
+        }
 
         function uiRenderCurrentSelections()
         {
@@ -943,7 +954,7 @@
                         }
                         else
                         {
-                            var col = outDataCell.append(curVal ? curVal:'undefined');
+                            var col = outDataCell.append(curVal ?? 'undefined');
                         }
                     }
                 }
