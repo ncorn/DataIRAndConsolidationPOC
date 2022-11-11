@@ -154,6 +154,7 @@
             var scenarios = [];
             var defaultScenario = 0;
             var highLightDiffs = true;
+            var currentUIDMode = 'cluster';
 
             var colors = [
                 'ffdbd9',
@@ -220,6 +221,11 @@
                 <option></option>
             </select>
             <label>Highlight Deltas: </label><input type="checkbox" id="chkHighlightDeltas" checked="true" />
+            <label>UID Mode: </label>
+            <select id="selUIDMode">
+                <option value="Member">Cluster Member Mode</option>
+                <option value="Cluster">Match Cluster Mode</option>
+            </select>
             <select id="selDeltaView" style="display: none;">
                 <option value="merged" selected="true">Merged</option>
                 <option value="start">Start</option>
@@ -262,6 +268,7 @@
             currentscenarioIdx = this.value;
             currentScenarioSelectedStep = 0;
             currentView = 'merged';
+            currentUIDMode = currentScenario.uidMode ?? 'Member';
 
             uiRenderCurrentSelections();
         });
@@ -286,7 +293,15 @@
 
         highLightDiffsChk.change(function(){
             highLightDiffs = this.checked;
-            //alert('test');
+
+            uiRenderCurrentSelections();
+        });
+
+
+        var uidModeDD = $('#selUIDMode');
+
+        uidModeDD.change(function(){
+            currentUIDMode = this.value;
 
             uiRenderCurrentSelections();
         });
@@ -327,6 +342,8 @@
                 }
 
                 viewDD.val(currentView);
+                uidModeDD.val(currentUIDMode);
+                console.log(currentUIDMode);
 
                 populateStepDDByScenario(currentScenario);
                 outputStepUIScenario(currentScenario);
@@ -962,7 +979,7 @@
             var consolidationMode = scenario.consolidationMode;
             var consolidationSortKeys = scenario.consolidationSortKeys ?? defaultConsolidationSortKeys;
             var inputDataStart = scenario.steps[startStepIdx].data;
-            var uidMode = scenario.uidMode ?? 'Member';
+            var uidMode = currentUIDMode;
 
             var idKeyRaw = 'id';
             var idKeyClust = 'UID';
