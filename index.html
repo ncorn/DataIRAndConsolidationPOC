@@ -653,7 +653,7 @@
             return output;
         }
 
-        function outputTablesForEachDataType(dataObj)
+        function outputTablesForEachDataType(dataObj, consolidationSortKeys)
         {
             // Display the raw data
             outputTableFromObjectArray(dataObj.dataRaw, 'outRawData');
@@ -662,7 +662,10 @@
             for(var idx in dataObj.dataClusters)
             {
                 var curCluster = dataObj.dataClusters[idx];
-                var table = outputTableFromObjectArray(curCluster.individuals, 'outGroupedData', true, true);
+                var tmpIndividuals = deepClone(curCluster.individuals);
+                dataSortObjArrayByKeys(tmpIndividuals, consolidationSortKeys);
+
+                var table = outputTableFromObjectArray(tmpIndividuals, 'outGroupedData', true, true);
 
                 var clusterRow = $('<tr class="rowClusterInfo"><td colspan="100"><b>Unified Individual ID:</b> ' + curCluster.UID + ', <b>Top Rank ID:</b> ' + curCluster.topRankId + ', <b>Cluster ID:</b> ' + curCluster.clusterId + ', <b>Match Value:</b> ' + curCluster.matchValue + ', <b>Delta:</b> ' + curCluster.delta + '</td></tr>');
                 table.prepend(clusterRow);
@@ -681,8 +684,9 @@
 
         function dataConsolidateAttributes(arrayData, consolidationMode, consolidationSortKeys)
         {
-            dataSortObjArrayByKeys(arrayData, consolidationSortKeys);
-            var masterObj = getCompleteProperties(arrayData);
+            var tmpData = deepClone(arrayData);
+            dataSortObjArrayByKeys(tmpData, consolidationSortKeys);
+            var masterObj = getCompleteProperties(tmpData);
             var retObj = { colorMap: {}, isUnifiedIndv: true };
 
             // loop through each property
@@ -693,9 +697,9 @@
                 if(consolidationMode == 'Consolidate')
                 {
                     // find the first available value
-                    for(var idx in arrayData)
+                    for(var idx in tmpData)
                     {
-                        var curRow = arrayData[idx];
+                        var curRow = tmpData[idx];
                         var curVal = curRow[masterKey];
                         var curColor = curRow.color;
 
@@ -708,7 +712,7 @@
                     }
                 }
                 else if(consolidationMode == 'PickAWinner'){
-                    retObj[masterKey] = arrayData[0][masterKey];
+                    retObj[masterKey] = tmpData[0][masterKey];
                 }
             }
 
@@ -1016,7 +1020,7 @@
                 }
             }
 
-            outputTablesForEachDataType(finalData);
+            outputTablesForEachDataType(finalData, scenario.consolidationSortKeys);
         }
 
         function dataCombineDataIterations(dataIterationOne, dataIterationTwo, idKeyRawData, idKeyClusterData, idKeyConsolidatedIndividuals, uidMode)
