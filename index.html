@@ -154,7 +154,6 @@
             var scenarios = [];
             var defaultScenario = 0;
             var highLightDiffs = true;
-            var currentUIDMode = 'cluster';
 
             var colors = [
                 'ffdbd9',
@@ -184,6 +183,7 @@
                         {
                             currentscenarioIdx = idx;
                             currentScenario = scenarios[currentscenarioIdx];
+                            currentUIDMode = currentScenario.uidMode;
                         }
                     }
                 }
@@ -248,6 +248,7 @@
         var currentScenario = scenarios[currentscenarioIdx];
         var currentScenarioSelectedStep = 0;
         var currentView = 'merged';
+        var currentUIDMode = currentScenario.uidMode ?? 'Member';
 
         var scenarioDD = $('#selScenario');
         
