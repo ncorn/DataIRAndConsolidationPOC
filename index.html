@@ -520,7 +520,7 @@
             return JSON.parse(JSON.stringify(obj));
         }
 
-        function dataCalculateDeltas(objGroupA, objGroupB, compareKey)
+        function dataCalculateArrayDeltas(objGroupA, objGroupB, compareKey)
         {
             var sortConfig = [{ key: compareKey, direction: 'asc'}]
 
@@ -546,8 +546,21 @@
                     {
                         if(curValA == curValB)
                         {
-                            objA.delta = 'unchanged';
-                            objB.delta = 'unchanged';
+                            var updates = dataCalculateObjectDeltas(objA, objB);
+
+                            if(updates.length > 0)
+                            {
+                                objA.delta = 'updated';
+                                objB.delta = 'updated';
+                            }
+                            else
+                            {
+                                objA.delta = 'unchanged';
+                                objB.delta = 'unchanged';
+                            }
+
+                            objA.updates = deepClone(updates);
+                            objB.updates = deepClone(updates);
 
                             objMatched = true;
                         }
@@ -579,6 +592,65 @@
 
                 idxB++;
             }
+        }
+
+        function dataCalculateObjectDeltas(objA, objB)
+        {
+            var excludedKeys = [ 'color', 'colorMap' ];
+            var deltas = [];
+            var objAKeys = Object.keys(objA);
+            var objBKeys = Object.keys(objB);
+            var objSumKeys = objAKeys.concat(objBKeys);
+
+            objSumKeys.sort();
+
+            for(var i = 0; i < objSumKeys.length; i++)
+            {
+                var isExcluded = false;
+                var prevValue;
+                var curKey = objSumKeys[i];
+                var nextKey = objSumKeys[i+1];
+
+                excludedKeys.forEach(element => {
+                    if(element == curKey)
+                    {
+                        isExcluded = true;
+                    }
+                });
+
+                if(isExcluded)
+                {
+                    continue;
+                }
+
+                while(curKey === nextKey)
+                {
+                    i++;
+                    curKey = nextKey;
+                    nextKey = objSumKeys[i+1];
+                }
+
+                var valA = objA[curKey];
+                var valB = objB[curKey];
+
+                if(Array.isArray(valA) || Array.isArray(valB))
+                {
+                    continue;
+                }
+
+                if(valA !== valB)
+                {
+                    var delta = {
+                        key: curKey,
+                        valLeft: valA,
+                        valRight: valB,
+                    }
+
+                    deltas.push(delta);
+                }
+            }
+
+            return deltas;
         }
 
         function hashString(str, seed = 0) {
@@ -720,6 +792,11 @@
                     if(curCluster.delta == 'added')
                     {
                         table.addClass('added');
+                    }
+
+                    if(curCluster.delta == 'updated')
+                    {
+                        table.addClass('updated');
                     }
                 }
             }
@@ -1006,9 +1083,9 @@
                 var inputDataFinish = scenario.steps[finishStepIdx].data;
                 var computedDataFinish = crteateDataFromScenarioRawData(inputDataFinish, matchKey, consolidationMode, consolidationSortKeys, uidMode);
 
-                dataCalculateDeltas(computedDataStart.dataRaw, computedDataFinish.dataRaw, idKeyRaw);
-                dataCalculateDeltas(computedDataStart.dataClusters, computedDataFinish.dataClusters, idKeyClust)
-                dataCalculateDeltas(computedDataStart.dataConsolidatedIndv, computedDataFinish.dataConsolidatedIndv, idKeyConsIndv);
+                dataCalculateArrayDeltas(computedDataStart.dataRaw, computedDataFinish.dataRaw, idKeyRaw);
+                dataCalculateArrayDeltas(computedDataStart.dataClusters, computedDataFinish.dataClusters, idKeyClust)
+                dataCalculateArrayDeltas(computedDataStart.dataConsolidatedIndv, computedDataFinish.dataConsolidatedIndv, idKeyConsIndv);
 
                 // calculate deltas for each individual cluster
                 for(var idxA in computedDataStart.dataClusters)
@@ -1025,7 +1102,7 @@
                         if(curClusterAId == curClusterBId)
                         {
                             clusterAMatched = true;
-                            dataCalculateDeltas(curClusterA.individuals, curClusterB.individuals, idKeyRaw);
+                            dataCalculateArrayDeltas(curClusterA.individuals, curClusterB.individuals, idKeyRaw);
                             clusterAMatched = true;
                         }
                     }
