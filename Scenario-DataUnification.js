@@ -41,6 +41,27 @@ scenarios.push({
 });
 
 scenarios.push({
+    id: "DataUnification-PickAWinner-SharedEmail-Team",
+    title: 'Data Unification - Pick A Winner - Shared Email - Team',
+    consolidationMode: 'PickAWinner',
+    irMatchKey: 'Email',
+    steps: 
+    [
+        {
+            title: 'Initial Data',
+            description: '',
+            data:
+            [
+                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'C', Email: 'FinanceTeam@Company.com', _last_updated: '2022-10-04' },
+                { color: 'ccffcf', _object_type: 'Contact', id: 'C2', FirstName: 'Dawn', LastName: 'R', Email: 'FinanceTeam@Company.com', _last_updated: '2022-10-02', Salutation: 'Mrs.' },
+                { color: 'cccfff', _object_type: 'Contact', id: 'C3', FirstName: 'Bill', LastName: 'E', MiddleName: 'Wayne', Email: 'FinanceTeam@Company.com', _last_updated: '2022-10-03', Suffix: 'Jr' },
+                { color: 'ffcccc', _object_type: 'Contact', id: 'C4', FirstName: 'Betty', LastName: 'Smith', Email: 'FinanceTeam@Company.com', _last_updated: '2022-10-01', Pronouns: "They/Them" },
+            ]
+        }
+    ]
+});
+
+scenarios.push({
     id: "DataUnification-Duplicates",
     title: 'Data Unification - Duplicates',
     consolidationMode: 'Consolidate',
