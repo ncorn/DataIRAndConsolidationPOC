@@ -1029,9 +1029,13 @@
                             }
 
                         }
+                        else if(curVal === undefined)
+                        {
+                            outDataCell.append('undefined');
+                        }
                         else
                         {
-                            var col = outDataCell.append(curVal ?? 'undefined');
+                            var col = outDataCell.append(curVal.toString());
                         }
                     }
                 }
