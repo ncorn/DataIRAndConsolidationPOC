@@ -4,6 +4,10 @@ scenarios.push(
         title: '{Title of this scenario}',
         consolidationMode: 'Consolidate', //{ Mode used to consolidate data for unified individuals: 'Consolidate' || 'PickAWinner'},
         irMatchKey: 'Email', // Property of an object used to match individuals together. Defaulting to Email for current usecases.
+        consolidationSortKeys: 
+        [  
+            { key: '{Key to sort}', direction: '{Sort Direction: asc || desc}'}
+        ],
         steps: 
         [
             {
