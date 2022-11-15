@@ -41,6 +41,34 @@ scenarios.push({
 });
 
 scenarios.push({
+    id: "DataUnification-Mixing-UnverifiedEmail",
+    title: 'Data Unification - Mixing - Unverified Email',
+    consolidationMode: 'Consolidate',
+    irMatchKey: 'Email',
+    steps: 
+    [
+        {
+            title: 'Initial Data',
+            description: '',
+            data:
+            [
+                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'C', Email: 'DataEnthusiast1@Company.com', EmailVerified: false, _last_updated: '2022-10-02', BankAccountBalance: 3827596764 },
+                { color: 'ccffcf', _object_type: 'Contact', id: 'C2', FirstName: 'Dawn', LastName: 'R', Email: 'DataEnthusiast1@Company.com', EmailVerified: true, _last_updated: '2022-10-04', Salutation: 'Mrs.' },
+            ]
+        },
+        {
+            title: 'Correct Information',
+            description: '',
+            data:
+            [
+                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'C', Email: 'DataEnthusiast17@Company.com', EmailVerified: true, _last_updated: '2022-10-02', BankAccountBalance: 3827596764 },
+                { color: 'ccffcf', _object_type: 'Contact', id: 'C2', FirstName: 'Dawn', LastName: 'R', Email: 'DataEnthusiast1@Company.com', EmailVerified: true, _last_updated: '2022-10-04', Salutation: 'Mrs.' },
+            ]
+        }
+    ]
+});
+
+scenarios.push({
     id: "DataUnification-PickAWinner-SharedEmail-Team",
     title: 'Data Unification - Pick A Winner - Shared Email - Team',
     consolidationMode: 'PickAWinner',
@@ -60,6 +88,7 @@ scenarios.push({
         }
     ]
 });
+
 
 scenarios.push({
     id: "DataUnification-Duplicates",
@@ -183,6 +212,26 @@ scenarios.push({
                 { color: 'ccffcf', _object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'Smith', Email: 'NathanS@domain.com.com', _last_updated: '2022-10-02', Suffix: 'Sr' },
                 { color: 'cccfff', _object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'Smith', Email: 'NathanS@domain.com.com', _last_updated: '2022-10-03', Title: 'Software Architect' },
                 { color: 'ffcccc', _object_type: 'Contact', id: 'C4', FirstName: 'Nathan', LastName: 'Smith', Email: 'NathanS@domain.com.com', _last_updated: '2022-10-04', YearsOfService: 11 },
+            ]
+        }
+    ]
+});
+
+scenarios.push({
+    id: "DataUnification-Masking-Profiles",
+    title: 'Data Unification - Masking - Shared Email - Kid\'s Profiles',
+    consolidationMode: 'Consolidate',
+    irMatchKey: 'Email',
+    steps: 
+    [
+        {
+            title: 'Initial Data',
+            description: '',
+            data:
+            [
+                { color: 'ccffcf', _object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'Smith', GamerProfileUsername: 'MultiplayerAddict', Email: 'SmithFamily@TheSmiths.com', _last_updated: '2022-10-02', Age: 16, FavoriteGame: 'Call Of Duty' },
+                { color: 'cccfff', _object_type: 'Contact', id: 'C3', FirstName: 'Isaac', LastName: 'Smith', GamerProfileUsername: 'MathWhiz', Email: 'SmithFamily@TheSmiths.com', _last_updated: '2022-10-03', Age: 5, FavoriteGame: 'Number Explorer' },
+                { color: 'ffcccc', _object_type: 'Contact', id: 'C4', FirstName: 'Avery', LastName: 'Smith', GamerProfileUsername: 'EarlyLearner17', Email: 'SmithFamily@TheSmiths.com', _last_updated: '2022-10-04', Age: 2, FavoriteGame: 'Shape Monster' },
             ]
         }
     ]
