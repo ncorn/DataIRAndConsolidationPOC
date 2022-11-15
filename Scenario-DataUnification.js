@@ -69,6 +69,33 @@ scenarios.push({
 });
 
 scenarios.push({
+    id: "DataUnification-Mixing-UnverifiedEmail-Malicious",
+    title: 'Data Unification - Mixing - Unverified Email - Malicious',
+    consolidationMode: 'Consolidate',
+    irMatchKey: 'Email',
+    steps: 
+    [
+        {
+            title: 'Initial Data',
+            description: '',
+            data:
+            [
+                { color: 'ccffcf', _object_type: 'Contact', id: 'C2', FirstName: 'Dawn', LastName: 'R', Email: 'DataEnthusiast1@Company.com', EmailVerified: true, _last_updated: '2022-10-04', Salutation: 'Mrs.' },
+            ]
+        },
+        {
+            title: 'Correct Information',
+            description: '',
+            data:
+            [
+                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'C', Email: 'DataEnthusiast1@Company.com', EmailVerified: false, _last_updated: '2022-10-02', FavoriteWebsite: 'HateSpeech.Domain' },
+                { color: 'ccffcf', _object_type: 'Contact', id: 'C2', FirstName: 'Dawn', LastName: 'R', Email: 'DataEnthusiast1@Company.com', EmailVerified: true, _last_updated: '2022-10-04', Salutation: 'Mrs.' },
+            ]
+        }
+    ]
+});
+
+scenarios.push({
     id: "DataUnification-PickAWinner-SharedEmail-Team",
     title: 'Data Unification - Pick A Winner - Shared Email - Team',
     consolidationMode: 'PickAWinner',
