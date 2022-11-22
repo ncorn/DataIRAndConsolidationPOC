@@ -82,6 +82,26 @@
                 border-right-width: 3px;
             }
 
+            .updated{
+                border: solid 3px #ffff00;
+            }
+
+            tr.updated td
+            {
+                border: solid #ffff00;
+                border-width: 3px 0px;
+            }
+
+            tr.updated :first-child
+            {
+                border-left-width: 3px;
+            }
+
+            tr.updated :last-child
+            {
+                border-right-width: 3px;
+            }
+
             #outSteps{
                 margin-bottom: 20px;
                 float: left;
@@ -974,6 +994,11 @@
                     if(curData.delta == 'removed')
                     {
                         row.addClass('removed');
+                    }
+
+                    if(curData.delta == 'updated')
+                    {
+                        row.addClass('updated');
                     }
                 }
 
