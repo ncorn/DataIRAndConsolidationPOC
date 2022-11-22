@@ -50,7 +50,7 @@ scenarios.push({
             ]
         },
         {
-            title: 'Attempted Gender Update - Split',
+            title: 'Gender Update - Email Change',
             description: '',
             data:
             [
@@ -72,7 +72,7 @@ scenarios.push({
             ]
         },
         {
-            title: 'Inactive Spender Update',
+            title: 'Low Rewards User Update',
             description: '',
             data:
             [
@@ -116,7 +116,7 @@ scenarios.push({
             ]
         },
         {
-            title: 'Big Spender Update',
+            title: 'High Rewards User Update',
             description: '',
             data:
             [
