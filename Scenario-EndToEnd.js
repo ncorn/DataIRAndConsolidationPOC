@@ -19,8 +19,8 @@ scenarios.push({
                 { color: 'ffcccc', _object_type: 'Lead', id: 'L1', FirstName: 'Jim', LastName: 'Johnson', Email: 'j.johnson@gmail.com', _last_updated: '2022-10-02',  Salutation: 'Ms', Pronouns: 'He/Him'},
 
                 // Data Stability
-                { color: 'ffc9fb', _object_type: 'Contact', id: 'C4', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-02', Brand: 'B1', YTDSpend: 0},
-                { color: 'ffcb94', _object_type: 'Contact', id: 'C5', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-02', Brand: 'B2', YTDSpend: 100000},
+                { color: 'ffc9fb', _object_type: 'Contact', id: 'C4', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-02', Brand: 'B1', RewardLevel: 'Bronze'},
+                { color: 'ffcb94', _object_type: 'Contact', id: 'C5', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-02', Brand: 'B2', RewardLevel: 'Gold'},
 
                 // Unmasking/Split
                 { color: 'ff949d', _object_type: 'Contact', id: 'C6', FirstName: 'Elliot', LastName: 'Page', Email: 'e.page@gmail.com', _last_updated: '2022-10-02',  Salutation: 'Mr', Pronouns: 'He/Him'},
@@ -41,8 +41,8 @@ scenarios.push({
                 { color: 'ffcccc', _object_type: 'Lead', id: 'L1', FirstName: 'Sarah', LastName: 'Johnson', Email: 'j.johnson@gmail.com', _last_updated: '2022-10-03',  Salutation: 'Ms', Pronouns: 'She/Her'},
 
                 // Data Stability
-                { color: 'ffc9fb', _object_type: 'Contact', id: 'C4', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-02', Brand: 'B1', YTDSpend: 0},
-                { color: 'ffcb94', _object_type: 'Contact', id: 'C5', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-02', Brand: 'B2', YTDSpend: 100000},
+                { color: 'ffc9fb', _object_type: 'Contact', id: 'C4', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-02', Brand: 'B1', RewardLevel: 'Bronze'},
+                { color: 'ffcb94', _object_type: 'Contact', id: 'C5', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-02', Brand: 'B2', RewardLevel: 'Gold'},
 
                 // Unmasking/Split
                 { color: 'ff949d', _object_type: 'Contact', id: 'C6', FirstName: 'Elliot', LastName: 'Page', Email: 'e.page@gmail.com', _last_updated: '2022-10-02',  Salutation: 'Mr', Pronouns: 'He/Him'},
@@ -63,8 +63,8 @@ scenarios.push({
                 { color: 'ffcccc', _object_type: 'Lead', id: 'L1', FirstName: 'Sarah', LastName: 'Johnson', Email: 's.johnson@gmail.com', _last_updated: '2022-10-04',  Salutation: 'Ms', Pronouns: 'She/Her'},
 
                 // Data Stability
-                { color: 'ffc9fb', _object_type: 'Contact', id: 'C4', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-02', Brand: 'B1', YTDSpend: 0},
-                { color: 'ffcb94', _object_type: 'Contact', id: 'C5', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-02', Brand: 'B2', YTDSpend: 100000},
+                { color: 'ffc9fb', _object_type: 'Contact', id: 'C4', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-02', Brand: 'B1', RewardLevel: 'Bronze'},
+                { color: 'ffcb94', _object_type: 'Contact', id: 'C5', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-02', Brand: 'B2', RewardLevel: 'Gold'},
 
                 // Unmasking/Split
                 { color: 'ff949d', _object_type: 'Contact', id: 'C6', FirstName: 'Elliot', LastName: 'Page', Email: 'e.page@gmail.com', _last_updated: '2022-10-02',  Salutation: 'Mr', Pronouns: 'He/Him'},
@@ -85,8 +85,8 @@ scenarios.push({
                 { color: 'ffcccc', _object_type: 'Lead', id: 'L1', FirstName: 'Sarah', LastName: 'Johnson', Email: 's.johnson@gmail.com', _last_updated: '2022-10-04',  Salutation: 'Ms', Pronouns: 'She/Her'},
 
                 // Data Stability
-                { color: 'ffc9fb', _object_type: 'Contact', id: 'C4', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-02', Brand: 'B1', YTDSpend: 0},
-                { color: 'ffcb94', _object_type: 'Contact', id: 'C5', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-06', Brand: 'B2', YTDSpend: 100000},
+                { color: 'ffc9fb', _object_type: 'Contact', id: 'C4', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-02', Brand: 'B1', RewardLevel: 'Bronze'},
+                { color: 'ffcb94', _object_type: 'Contact', id: 'C5', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-06', Brand: 'B2', RewardLevel: 'Gold'},
 
                 // Unmasking/Split
                 { color: 'ff949d', _object_type: 'Contact', id: 'C6', FirstName: 'Elliot', LastName: 'Page', Email: 'e.page@gmail.com', _last_updated: '2022-10-02',  Salutation: 'Mr', Pronouns: 'He/Him'},
@@ -107,8 +107,8 @@ scenarios.push({
                 { color: 'ffcccc', _object_type: 'Lead', id: 'L1', FirstName: 'Sarah', LastName: 'Johnson', Email: 's.johnson@gmail.com', _last_updated: '2022-10-04',  Salutation: 'Ms', Pronouns: 'She/Her'},
 
                 // Data Stability
-                { color: 'ffc9fb', _object_type: 'Contact', id: 'C4', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-02', Brand: 'B1', YTDSpend: 0},
-                { color: 'ffcb94', _object_type: 'Contact', id: 'C5', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-06', Brand: 'B2', YTDSpend: 100000},
+                { color: 'ffc9fb', _object_type: 'Contact', id: 'C4', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-02', Brand: 'B1', RewardLevel: 'Bronze'},
+                { color: 'ffcb94', _object_type: 'Contact', id: 'C5', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-06', Brand: 'B2', RewardLevel: 'Gold'},
 
                 // Unmasking/Split
                 { color: 'ff949d', _object_type: 'Contact', id: 'C6', FirstName: 'Elliot', LastName: 'Page', Email: 'elliot.page@gmail.com', _last_updated: '2022-10-07',  Salutation: 'Mr', Pronouns: 'He/Him'},
@@ -129,8 +129,8 @@ scenarios.push({
                 { color: 'ffcccc', _object_type: 'Lead', id: 'L1', FirstName: 'Sarah', LastName: 'Johnson', Email: 's.johnson@gmail.com', _last_updated: '2022-10-04',  Salutation: 'Ms', Pronouns: 'She/Her'},
 
                 // Data Stability
-                { color: 'ffc9fb', _object_type: 'Contact', id: 'C4', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-08', Brand: 'B1', YTDSpend: 0},
-                { color: 'ffcb94', _object_type: 'Contact', id: 'C5', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-06', Brand: 'B2', YTDSpend: 100000},
+                { color: 'ffc9fb', _object_type: 'Contact', id: 'C4', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-08', Brand: 'B1', RewardLevel: 'Bronze'},
+                { color: 'ffcb94', _object_type: 'Contact', id: 'C5', FirstName: 'Dawn', LastName: 'R', Email: 'Dawn.R@gmail.com', _last_updated: '2022-10-06', Brand: 'B2', RewardLevel: 'Gold'},
 
                 // Unmasking/Split
                 { color: 'ff949d', _object_type: 'Contact', id: 'C6', FirstName: 'Elliot', LastName: 'Page', Email: 'elliot.page@gmail.com', _last_updated: '2022-10-07',  Salutation: 'Mr', Pronouns: 'He/Him'},
