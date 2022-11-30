@@ -4,21 +4,30 @@
             .dataOutput{
                 border-collapse: separate;
                 border: solid 1px #000000;
-                margin-bottom: 20px;
+                margin: 0 0 20px 0;
                 /* width: 800px; */
                 border-spacing: 0;
+                background-color: #ffffff;
+            }
+
+            .cluster .dataOutput{
+                margin-left: 20px;
             }
 
             #tblConsolIndv td{
                 padding: 10px;
             }
 
-            .rowClusterInfo td{
+            .rowClusterInfo{
                 padding: 10px;
                 text-align: center;
+                margin-bottom: 20px;
+                border: solid 0px #000000;
+                border-width: 0 0 1px 0;
+                background-color: #efefef;
             }
 
-            .rowHeader, .rowClusterInfo{
+            .rowHeader {
                 border: solid 1px #000000;
             }
 
@@ -146,13 +155,14 @@
                 margin-top: 0;
             }
 
-             .objArray, .objArray tr{
+            .objArray, .objArray tr{
                 width: auto;
                 border-width: 0;
                 border: none;
                 margin: 0;
                 padding: 0;
                 white-space: nowrap;
+                background-color: transparent;
             }
 
             .objArray tr td{
@@ -164,6 +174,12 @@
 
             .objArray .rowHeader{
                 display: none;
+            }
+
+            .cluster {
+                margin-bottom: 20px;
+                border: solid 1px #000000;
+                background-color: #f7f7f7;
             }
         </style>
 
@@ -535,34 +551,46 @@
             outputTableFromObjectArray(dataObj.dataRaw, 'outRawData');
             outputTableFromObjectArray(dataObj.dataConsolidatedIndv, 'outConsolidatedData', true, false);
 
-            for(var idx in dataObj.dataClusters)
+            for(let idx in dataObj.dataClusters)
             {
-                var curCluster = dataObj.dataClusters[idx];
-                var tmpIndividuals = deepClone(curCluster.individuals);
+                let curCluster = dataObj.dataClusters[idx];
+                let tmpIndividuals = deepClone(curCluster.individuals);
+                let tmpCPEmail = deepClone(curCluster.UnifiedContactPointEmail);
                 dataSortObjArrayByKeys(tmpIndividuals, consolidationSortKeys);
 
-                var table = outputTableFromObjectArray(tmpIndividuals, 'outGroupedData', true, true);
-
-                var clusterRow = $('<tr class="rowClusterInfo"><td colspan="100"><b>Unified Individual ID:</b> ' + curCluster.UID + ', <b>Top Rank ID:</b> ' + curCluster.topRankId + ', <b>Cluster ID:</b> ' + curCluster.clusterId + ', <b>Match Value:</b> ' + curCluster.matchValue + ', <b>Delta:</b> ' + curCluster.delta + '</td></tr>');
-                table.prepend(clusterRow);
+                let clusterContainer = $('<div class="cluster"></div>');
+                let tableIndvClusters = outputTableFromObjectArray(tmpIndividuals, null, true, true);
+                let clusterInfo = $('<div class="rowClusterInfo"><b>Unified Individual ID:</b> ' + curCluster.UID + ', <b>Top Rank ID:</b> ' + curCluster.topRankId + ', <b>Cluster ID:</b> ' + curCluster.clusterId + ', <b>Match Value:</b> ' + curCluster.matchValue + ', <b>Delta:</b> ' + curCluster.delta + '</div>');
 
                 if(highLightDiffs)
                 {
                     if(curCluster.delta == 'removed')
                     {
-                        table.addClass('removed');
+                        clusterContainer.addClass('removed');
                     }
 
                     if(curCluster.delta == 'added')
                     {
-                        table.addClass('added');
+                        clusterContainer.addClass('added');
                     }
 
                     if(curCluster.delta == 'updated')
                     {
-                        table.addClass('updated');
+                        clusterContainer.addClass('updated');
                     }
                 }
+
+                clusterContainer.append(clusterInfo);
+                clusterContainer.append(tableIndvClusters);
+
+                if(tmpCPEmail.length > 0)
+                {
+                    let tblEmailClusters = outputTableFromObjectArray(tmpCPEmail, null, true, false);
+
+                    clusterContainer.append(tblEmailClusters);
+                }
+
+                $('#outGroupedData').append(clusterContainer);
             }
         }
 
@@ -694,7 +722,7 @@
 
                         if(Array.isArray(curVal))
                         {
-                            if(1==1){
+                            if(typeof curVal[0] === 'object'){
                                 var outSubData = outputTableFromObjectArray(curVal, null, false, false);
                                 outSubData.addClass('objArray');
                                 outDataCell.append(outSubData);
@@ -721,6 +749,10 @@
                         else if(curVal === undefined)
                         {
                             outDataCell.append('undefined');
+                        }
+                        else if(curVal === null)
+                        {
+                            outDataCell.append('NULL');
                         }
                         else
                         {

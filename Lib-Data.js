@@ -164,6 +164,9 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
     // get data sorted by match key
     var stepSortedData = deepClone(data);
 
+    // Normalize all the consent values
+    dataCollapseConsent(stepSortedData);
+
     stepSortedData.sort(function(a,b){
         var valA = a[irMatchKey];
         var valB = b[irMatchKey];
@@ -223,9 +226,53 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
         var prevValue = curValue;
     }
 
+    // Cluster Contact Points
+    for(let idx in clusters)
+    {
+        let tmpCPEmailFull = [];
+        let curCluster = clusters[idx];
+
+        // collect all contact points
+        for(let idxIndv in curCluster.individuals)
+        {
+            let curIndv = curCluster.individuals[idxIndv];
+
+            for(let idxCP in curIndv.ContactPointEmail)
+            {
+                let curCP = curIndv.ContactPointEmail[idxCP];
+                let tmpCP = deepClone(curCP);
+                tmpCP.color = curIndv.color;
+
+                tmpCPEmailFull.push(tmpCP);
+            }
+        }
+
+        let emailClusters = dataShardObjectArrayByKey(tmpCPEmailFull, 'EmailAddress');
+        curCluster.UnifiedContactPointEmail = [];
+
+        for(let idxEmailClst in emailClusters)
+        {
+            let curEmailCluster = emailClusters[idxEmailClst];
+
+            // TODO: There is no e-mail contact point ranking
+            let clusterEmail = curEmailCluster[0].EmailAddress;
+            let clusterCPID = curEmailCluster[0].ContactPointEmailId;
+
+            let newClst = {
+                UnifiedContactPointEmailId: hashString(clusterEmail),
+                ContactPointEmailId: clusterCPID,
+                EmailAddress: clusterEmail,
+                ContactPoints: curEmailCluster,
+            };
+
+            curCluster.UnifiedContactPointEmail.push(newClst);
+        }
+    }
+
+    // Consolidate individuals in each cluster
     var consolidatedIndividuals = new Array();
 
-    for(var idx in clusters)
+    for(let idx in clusters)
     {
         var clst = clusters[idx];
         var curConsIndv = dataConsolidateAttributes(clst.individuals, consolidationMode, consolidationSortKeys);
@@ -244,6 +291,9 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
             curConsIndv.UID = curConsIndv.id;
         }
 
+        let tmpUnfiedContactPointEmail = dataGetDistinctListForProperty(clst.UnifiedContactPointEmail, 'UnifiedContactPointEmailId');
+        curConsIndv.UnifiedContactPointEmail = tmpUnfiedContactPointEmail;
+
         consolidatedIndividuals.push(curConsIndv);
     }
 
@@ -257,22 +307,145 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
     return output;
 }
 
+function dataGetDistinctListForProperty(objArray, key)
+{
+    let retData = new Set();
+
+    for(let idx in objArray)
+    {
+        retData.add(objArray[idx][key]);
+    }
+
+    return Array.from(retData);
+}
+
+function dataShardObjectArrayByKey(objArray, key)
+{
+    if(objArray.length == 0)
+    {
+        return [];
+    }
+
+    dataSortObjArrayByKeys(objArray, [ { key: key, direction: 'asc' } ]);
+
+    // Divide contact points into cp clusters
+    let isFirst = true;
+    let prevObj = null;
+    let outShards = [];
+    let tmpShard = [];
+    outShards.push(tmpShard);
+
+    for(let idx in objArray)
+    {
+        if(isFirst)
+        {
+            isFirst = false;
+            prevObj = objArray[0];
+        }
+
+        let curObj = objArray[idx];
+
+        if(prevObj[key] != curObj[key])
+        {
+            tmpShard = [];
+            outShards.push(tmpShard);
+        }
+
+        tmpShard.push(curObj);
+
+        prevObj = curObj;
+    }
+
+    return outShards;
+}
+
+function dataCollapseConsent(individuals)
+{
+    for(let i = 0; i < individuals.length; i++)
+    {
+        let curIndv = individuals[i];
+        curIndv.ConsentCollapsed = [];
+
+        // L1 - Party Consent
+        if(curIndv.PartyConsent !== undefined)
+        {
+            for(let ii = 0; ii < curIndv.PartyConsent.length; ii++)
+            {
+                let curPartyConsent = curIndv.PartyConsent[ii];
+
+                curIndv.ConsentCollapsed.push({
+                    Level: 'L1',
+                    ConsentStatus: curPartyConsent.consent_status,
+                    EngagementChannelType: null,
+                    ContactPoint: null,
+                    DataUsePurpose: null,
+                    Brand: null
+                });
+            }
+        }
+
+        // L2 - Engagement Channel Consent
+        if(curIndv.EngagementChannelTypeConsent !== undefined)
+        {
+            for(let ii = 0; ii < curIndv.EngagementChannelTypeConsent.length; ii++)
+            {
+                let curChannelConsent = curIndv.EngagementChannelTypeConsent[ii];
+
+                curIndv.ConsentCollapsed.push({
+                    Level: 'L2',
+                    ConsentStatus: curChannelConsent.consent_status,
+                    EngagementChannelType: curChannelConsent.channel,
+                    ContactPoint: null,
+                    DataUsePurpose: curChannelConsent.DataUsePurpose ?? null,
+                    Brand: null
+                });
+            }
+        }
+
+        // L3 - Contact Point Consent
+        if(curIndv.ContactPointEmail !== undefined)
+        {
+            for(let ii = 0; ii < curIndv.ContactPointEmail.length; ii++)
+            {
+                let curContactPoint = curIndv.ContactPointEmail[ii];
+
+                for(let iii = 0; iii < curContactPoint.Consent.length; iii++)
+                {
+                    let curCPConsent = curContactPoint.Consent[iii];
+    
+                    curIndv.ConsentCollapsed.push({
+                        Level: 'L3',
+                        ConsentStatus: curCPConsent.consent_status,
+                        EngagementChannelType: null,
+                        ContactPoint: curContactPoint.ContactPointEmailId,
+                        DataUsePurpose: curCPConsent.DataUsePurpose ?? null,
+                        Brand: null
+                    });
+                }
+            }
+
+        }
+
+        // L4 - Communication Subscription Consent
+    }
+}
+
 function dataConsolidateAttributes(arrayData, consolidationMode, consolidationSortKeys)
 {
-    var tmpData = deepClone(arrayData);
+    let tmpData = deepClone(arrayData);
     dataSortObjArrayByKeys(tmpData, consolidationSortKeys);
-    var masterObj = getCompleteProperties(tmpData);
-    var retObj = { colorMap: {}, isUnifiedIndv: true };
+    let masterObj = getCompleteProperties(tmpData, [ 'ContactPointEmail', 'ConsentCollapsed' ]);
+    let retObj = { colorMap: {}, isUnifiedIndv: true };
 
     // loop through each property
-    for(var masterKey in masterObj)
+    for(let masterKey in masterObj)
     {
         retObj[masterKey] = null;
 
         if(consolidationMode == 'Consolidate')
         {
             // find the first available value
-            for(var idx in tmpData)
+            for(let idx in tmpData)
             {
                 var curRow = tmpData[idx];
                 var curVal = curRow[masterKey];
@@ -337,19 +510,32 @@ function dataSortObjArrayByKeys(objArray, sortKeys)
     });
 }   
 
-function getCompleteProperties(arrayData)
+function getCompleteProperties(arrayData, excludedKeys)
 {
-    var masterObj = {};
+    let masterObj = {};
     data = arrayData;
 
     // collect all properties
-    for(var i = 0; i < data.length; i++)
+    for(let i = 0; i < data.length; i++)
     {
-        var curObj = data[i];
+        let curObj = data[i];
 
-        for(var key in curObj)
+        for(let key in curObj)
         {
-            if(masterObj[key] === undefined)
+            let isExcluded = false;
+
+            if(excludedKeys)
+            {
+                for(let excldIdx in excludedKeys)
+                {
+                    if(key === excludedKeys[excldIdx])
+                    {
+                        isExcluded = true;
+                    }
+                }
+            }
+
+            if(masterObj[key] === undefined && isExcluded == false)
             {
                 masterObj[key] = null;
             }
