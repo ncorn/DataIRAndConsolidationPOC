@@ -157,7 +157,7 @@ function hashString(str, seed = 0) {
     return 4294967296 * (2097151 & h2) + (h1>>>0);
 };
 
-function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, consolidationSortKeys, uidMode){
+function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, consolidationSortKeys, uidMode, flowSortKeys){
     // get the raw data
     var stepRawData = deepClone(data);
 
@@ -241,6 +241,7 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
             {
                 let curCP = curIndv.ContactPointEmail[idxCP];
                 let tmpCP = deepClone(curCP);
+                tmpCP.id = curIndv.id;
                 tmpCP.color = curIndv.color;
 
                 tmpCPEmailFull.push(tmpCP);
@@ -258,25 +259,28 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
             let clusterEmail = curEmailCluster[0].EmailAddress;
             let clusterCPID = curEmailCluster[0].ContactPointEmailId;
 
-            let newClst = {
+            let newEmailClst = {
                 UnifiedContactPointEmailId: hashString(clusterEmail),
                 ContactPointEmailId: clusterCPID,
                 EmailAddress: clusterEmail,
                 ContactPoints: curEmailCluster,
             };
 
-            curCluster.UnifiedContactPointEmail.push(newClst);
+            curCluster.UnifiedContactPointEmail.push(newEmailClst);
         }
     }
 
     // Consolidate individuals in each cluster
     var consolidatedIndividuals = new Array();
+    let flowData = [];
 
     for(let idx in clusters)
     {
-        var clst = clusters[idx];
-        var curConsIndv = dataConsolidateAttributes(clst.individuals, consolidationMode, consolidationSortKeys);
+        let tmpFlowData = [];
+        let clst = clusters[idx];
+        let curConsIndv = dataConsolidateAttributes(clst.individuals, consolidationMode, consolidationSortKeys);
         curConsIndv.clusterId = clst.clusterId;
+        curConsIndv.IndividualId = curConsIndv.id;
 
         clst.topRankId = curConsIndv.id;
 
@@ -291,20 +295,165 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
             curConsIndv.UID = curConsIndv.id;
         }
 
-        let tmpUnfiedContactPointEmail = dataGetDistinctListForProperty(clst.UnifiedContactPointEmail, 'UnifiedContactPointEmailId');
-        curConsIndv.UnifiedContactPointEmail = tmpUnfiedContactPointEmail;
+        delete curConsIndv.id;
+
+        //let tmpUnfiedContactPointEmail = dataGetDistinctListForProperty(clst.UnifiedContactPointEmail, 'UnifiedContactPointEmailId');
+        //curConsIndv.UnifiedContactPointEmail = tmpUnfiedContactPointEmail;
 
         consolidatedIndividuals.push(curConsIndv);
+
+        // Create a view for Flow
+        // denormalize all individuals
+        for(let indvIdx in clst.individuals)
+        {
+            let curIdv = clst.individuals[indvIdx];
+
+            if(curIdv.ContactPointEmail === undefined)
+            {
+                tmpFlowData.push(
+                    {
+                        color: curIdv.color,
+                        id: curIdv.id,
+                        _object_type: curIdv._object_type,
+                        _created_date: curIdv._created_date,
+                        ContactPointEmailId: null,
+                        EmailAddress: null,
+                        UID: curConsIndv.UID,
+                        Attributes: [],
+                        EmailContactPointConsent: null
+                    });
+            }
+            else
+            {
+                for(let cpIdx in curIdv.ContactPointEmail)
+                {
+                    let curCP = curIdv.ContactPointEmail[cpIdx];
+
+                    tmpFlowData.push(
+                    {
+                        color: curIdv.color,
+                        id: curIdv.id,
+                        _object_type: curIdv._object_type,
+                        _created_date: curIdv._created_date,
+                        ContactPointEmailId: curCP.ContactPointEmailId,
+                        EmailAddress: curCP.EmailAddress,
+                        UID: curConsIndv.UID,
+                        Attributes: [],
+                        //EmailContactPointConsent: deepClone(curCP.Consent)
+                    });
+                }
+            }
+        }
+
+        if(tmpFlowData.length > 0)
+        {
+            // Sort: Type -> Created Date (oldest) -> Email ID
+            dataSortObjArrayByKeys(tmpFlowData, flowSortKeys);
+            let selectedFlowObject = tmpFlowData[0];
+
+            // Add the consoidated attributes
+            let objKeys = Object.keys(curConsIndv);
+
+            let systemKeys = new Set();
+            systemKeys.add('colorMap');
+            systemKeys.add('isUnifiedIndv');
+            systemKeys.add('color');
+            systemKeys.add('_object_type');
+            systemKeys.add('_created_date');
+            systemKeys.add('_last_updated');
+            systemKeys.add('PartyConsent');
+            systemKeys.add('EngagementChannelTypeConsent');
+            systemKeys.add('clusterId');
+            systemKeys.add('IndividualId');
+            systemKeys.add('UID');
+            systemKeys.add('Email');
+
+            for(let keyIdx in objKeys)
+            {
+                let key = objKeys[keyIdx];
+
+                if(!systemKeys.has(key))
+                {
+                    selectedFlowObject.Attributes.push(
+                        {
+                            color: curConsIndv.colorMap[key],
+                            key: key,
+                            value: curConsIndv[key]
+                        }
+                    );
+                }
+            }
+
+            // add The individual with the KVPs for unified individual
+            flowData.push(selectedFlowObject);
+
+            dataGetConsentFromCluster(curCluster, selectedFlowObject.ContactPointEmailId);
+        }
     }
 
     var output = {
         dataRaw: stepRawData,
         dataMatchSorted: stepSortedData,
         dataClusters: clusters,
-        dataConsolidatedIndv: consolidatedIndividuals
+        dataConsolidatedIndv: consolidatedIndividuals,
+        dataFlow: flowData
     };
 
     return output;
+}
+
+function dataGetConsentFromCluster(objCluster, ContactPointEmailId)
+{
+
+    // find the unified contact point
+    //for(let clstIdx in objCluster)
+    //{
+        let curCluster = objCluster;
+        let ucpIndivIds = [];
+        let isMatched = false;
+
+        for(let unCPIdx in curCluster.UnifiedContactPointEmail)
+        {
+            let curUCP = curCluster.UnifiedContactPointEmail[unCPIdx];
+
+            for(let cpIdx in curUCP.ContactPoints)
+            {
+                let curEmailCP = curUCP.ContactPoints[cpIdx];
+
+                if(curEmailCP.ContactPointEmailId == ContactPointEmailId)
+                {
+                    isMatched = true;
+                    ucpIndivIds = dataGetDistinctListForProperty(curUCP.ContactPoints, 'id');
+                    break;
+                }
+            }
+        }
+
+        // get all individuals from the unified CP
+        let ucpIndvs = [];
+
+        for(let ucpiIdx in ucpIndivIds)
+        {
+            let curIndvId = ucpIndivIds[ucpiIdx];
+
+            for(indvIdx in curCluster.individuals)
+            {
+                let curIndv = curCluster.individuals[indvIdx];
+
+                if(curIndv.id == curIndvId)
+                {
+                    ucpIndvs.push(curIndv);
+                }
+            }
+        }
+
+        // Get the last updated one
+        dataSortObjArrayByKeys(ucpIndvs, [ { key: '_last_updated', direction: 'desc' } ]);
+        //let mostRecentIndv = ucpIndvs[0];
+    //}
+
+    // Return its consent (if any)
+    //return ucpIndivIds[0]..
 }
 
 function dataGetDistinctListForProperty(objArray, key)
@@ -551,12 +700,14 @@ function dataCombineDataIterations(dataIterationOne, dataIterationTwo, idKeyRawD
         dataRaw: deepClone(dataIterationOne.dataRaw),
         dataMatchSorted: deepClone(dataIterationOne.dataMatchSorted),
         dataClusters: deepClone(dataIterationOne.dataClusters),
-        dataConsolidatedIndv: deepClone(dataIterationOne.dataConsolidatedIndv)
+        dataConsolidatedIndv: deepClone(dataIterationOne.dataConsolidatedIndv),
+        dataFlow: deepClone(dataIterationOne.dataFlow)
     };
 
     output.dataRaw = output.dataRaw.concat(deepClone(dataIterationTwo.dataRaw));
     output.dataMatchSorted = output.dataMatchSorted.concat(deepClone(dataIterationTwo.dataMatchSorted));
     output.dataConsolidatedIndv = output.dataConsolidatedIndv.concat(deepClone(dataIterationTwo.dataConsolidatedIndv));
+    output.dataFlow = output.dataFlow.concat(deepClone(dataIterationTwo.dataFlow));
 
     output.dataClusters = output.dataClusters.concat(deepClone(dataIterationTwo.dataClusters));
 

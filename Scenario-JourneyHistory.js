@@ -32,8 +32,12 @@ scenarios.push({
     irMatchKey: 'Email',
     consolidationSortKeys: 
     [  
+        { key: '_last_updated', direction: 'desc'} 
+    ],
+    sortKeysFlow: [  
         { key: '_object_type', direction: 'asc'}, 
-        { key: '_created_date', direction: 'desc'} 
+        { key: '_created_date', direction: 'asc'},
+        { key: 'ContactPointEmailId', direction: 'asc'}
     ],
     steps: 
     [
@@ -42,20 +46,164 @@ scenarios.push({
             description: '',
             data:
             [
-                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-04', _last_updated: '2022-10-01', _journey_history: _journey_historySendWaitSend, _engagement_history: _engagement_history2Sends },
-                { color: 'ccffcf', _object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-03', _last_updated: '2022-10-02' },
-                { color: 'cccfff', _object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-02', _last_updated: '2022-10-03' },
-                { color: 'ffcccc', _object_type: 'Contact', id: 'C4', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-01', _last_updated: '2022-10-04' },
+                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-04', _last_updated: '2022-10-01', _journey_history: _journey_historySendWaitSend, _engagement_history: _engagement_history2Sends,ContactPointEmail:[
+                    {
+                        ContactPointEmailId: 'Email4',
+                        EmailAddress: 'business@nsmith.com',
+                        DataSource: 'Marketing Cloud',
+                        DataSourceObject: 'SourceObj1',
+                        CreatedDate: '2022-01-02',
+                        Consent: [
+                            {
+                                consent_status: 'Opt In',
+                                DataUsePurpose: 'Account Updates'
+                            },
+                            {
+                                consent_status: 'Opt In',
+                                DataUsePurpose: 'Marketing'
+                            }
+                        ]
+                    }
+                ] },
+                { color: 'ccffcf', _object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-03', _last_updated: '2022-10-02',ContactPointEmail:[
+                    {
+                        ContactPointEmailId: 'Email3',
+                        EmailAddress: 'business@nsmith.com',
+                        DataSource: 'Marketing Cloud',
+                        DataSourceObject: 'SourceObj1',
+                        CreatedDate: '2022-01-02',
+                        Consent: [
+                            {
+                                consent_status: 'Opt Out',
+                                DataUsePurpose: 'Account Updates'
+                            },
+                            {
+                                consent_status: 'Opt Out',
+                                DataUsePurpose: 'Marketing'
+                            }
+                        ]
+                    }
+                ] },
+                { color: 'cccfff', _object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-02', _last_updated: '2022-10-03',ContactPointEmail:[
+                    {
+                        ContactPointEmailId: 'Email2',
+                        EmailAddress: 'business@nsmith.com',
+                        DataSource: 'Marketing Cloud',
+                        DataSourceObject: 'SourceObj1',
+                        CreatedDate: '2022-01-02',
+                        Consent: [
+                            {
+                                consent_status: 'Opt In',
+                                DataUsePurpose: 'Account Updates'
+                            },
+                            {
+                                consent_status: 'Opt In',
+                                DataUsePurpose: 'Marketing'
+                            }
+                        ]
+                    }
+                ] },
+                { color: 'ffcccc', _object_type: 'Contact', id: 'C4', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-01', _last_updated: '2022-10-04',ContactPointEmail:[
+                    {
+                        ContactPointEmailId: 'Email1',
+                        EmailAddress: 'business@nsmith.com',
+                        DataSource: 'Marketing Cloud',
+                        DataSourceObject: 'SourceObj1',
+                        CreatedDate: '2022-01-02',
+                        Consent: [
+                            {
+                                consent_status: 'Opt Out',
+                                DataUsePurpose: 'Account Updates'
+                            },
+                            {
+                                consent_status: 'Opt Out',
+                                DataUsePurpose: 'Marketing'
+                            }
+                        ]
+                    }
+                ] },
             ]
         },
         {
             title: 'Rekey 1',
             description: '',
             data:[
-                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-04', _last_updated: '2022-10-05', _journey_history: _journey_historySendWaitSend, _engagement_history: _engagement_history2Sends },
-                { color: 'ccffcf', _object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-03', _last_updated: '2022-10-02' },
-                { color: 'cccfff', _object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-02', _last_updated: '2022-10-03' },
-                { color: 'ffcccc', _object_type: 'Contact', id: 'C4', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-01', _last_updated: '2022-10-04' },
+                { color: 'fffead', _object_type: 'Contact', id: 'C1', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-04', _last_updated: '2022-10-05', _journey_history: _journey_historySendWaitSend, _engagement_history: _engagement_history2Sends,ContactPointEmail:[
+                    {
+                        ContactPointEmailId: 'Email4',
+                        EmailAddress: 'business@nsmith.com',
+                        DataSource: 'Marketing Cloud',
+                        DataSourceObject: 'SourceObj1',
+                        CreatedDate: '2022-01-02',
+                        Consent: [
+                            {
+                                consent_status: 'Opt In',
+                                DataUsePurpose: 'Account Updates'
+                            },
+                            {
+                                consent_status: 'Opt In',
+                                DataUsePurpose: 'Marketing'
+                            }
+                        ]
+                    }
+                ] },
+                { color: 'ccffcf', _object_type: 'Contact', id: 'C2', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-03', _last_updated: '2022-10-02',ContactPointEmail:[
+                    {
+                        ContactPointEmailId: 'Email3',
+                        EmailAddress: 'business@nsmith.com',
+                        DataSource: 'Marketing Cloud',
+                        DataSourceObject: 'SourceObj1',
+                        CreatedDate: '2022-01-02',
+                        Consent: [
+                            {
+                                consent_status: 'Opt In',
+                                DataUsePurpose: 'Account Updates'
+                            },
+                            {
+                                consent_status: 'Opt In',
+                                DataUsePurpose: 'Marketing'
+                            }
+                        ]
+                    }
+                ] },
+                { color: 'cccfff', _object_type: 'Contact', id: 'C3', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-02', _last_updated: '2022-10-03',ContactPointEmail:[
+                    {
+                        ContactPointEmailId: 'Email2',
+                        EmailAddress: 'business@nsmith.com',
+                        DataSource: 'Marketing Cloud',
+                        DataSourceObject: 'SourceObj1',
+                        CreatedDate: '2022-01-02',
+                        Consent: [
+                            {
+                                consent_status: 'Opt In',
+                                DataUsePurpose: 'Account Updates'
+                            },
+                            {
+                                consent_status: 'Opt In',
+                                DataUsePurpose: 'Marketing'
+                            }
+                        ]
+                    }
+                ] },
+                { color: 'ffcccc', _object_type: 'Contact', id: 'C4', FirstName: 'Nathan', LastName: 'Smith', Email: 'business@nsmith.com', _created_date: '2022-01-01', _last_updated: '2022-10-04',ContactPointEmail:[
+                    {
+                        ContactPointEmailId: 'Email1',
+                        EmailAddress: 'business@nsmith.com',
+                        DataSource: 'Marketing Cloud',
+                        DataSourceObject: 'SourceObj1',
+                        CreatedDate: '2022-01-02',
+                        Consent: [
+                            {
+                                consent_status: 'Opt In',
+                                DataUsePurpose: 'Account Updates'
+                            },
+                            {
+                                consent_status: 'Opt In',
+                                DataUsePurpose: 'Marketing'
+                            }
+                        ]
+                    }
+                ] },
             ]
         },
         {

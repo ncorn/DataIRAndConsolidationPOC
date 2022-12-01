@@ -209,6 +209,12 @@
                 { key: '_last_updated', direction: 'desc'} 
             ];
 
+            var defaultFlowSortKeys = [  
+                { key: '_object_type', direction: 'asc'}, 
+                { key: '_created_date', direction: 'asc'},
+                { key: 'ContactPointEmailId', direction: 'asc'}
+            ]
+
             $(document).ready(function(){
                 dataAssignScenarioDefaults();
                 var qsScenario = new URLSearchParams(window.location.search).get('scenario');
@@ -278,10 +284,12 @@
         <div class="outContainer" id="outRawData"></div>
         <h1 style="display: none;">Match Key Sorted Individuals</h1>
         <div style="display: none;" class="outContainer" id="outSortedData"></div>
-        <h1>Clustered Individuals</h1>
-        <div class="outContainer" id="outGroupedData"></div>
         <h1>Consolidated Individuals</h1>
+        <div class="outContainer" id="outGroupedData"></div>
+        <h1>Unified Individuals</h1>
         <div class="outContainer" id="outConsolidatedData"></div>
+        <h1>Flow Dataset</h1>
+        <div class="outContainer" id="outFlowDataset"></div>
     </body>
     <script lang="javascript">
         var currentscenarioIdx = defaultScenario;
@@ -550,6 +558,7 @@
             // Display the raw data
             outputTableFromObjectArray(dataObj.dataRaw, 'outRawData');
             outputTableFromObjectArray(dataObj.dataConsolidatedIndv, 'outConsolidatedData', true, false);
+            outputTableFromObjectArray(dataObj.dataFlow, 'outFlowDataset');
 
             for(let idx in dataObj.dataClusters)
             {
@@ -596,6 +605,11 @@
 
         function outputTableFromObjectArray(arrayData, outContainerID, append, showRank)
         {
+            if(!Array.isArray(arrayData))
+            {
+                return;
+            }
+
             var outTable = $('<table class="dataOutput"></table>');
             var excludedKeys = [ 'color', 'colorMap', 'isUnifiedIndv' ];
 
@@ -770,25 +784,28 @@
             var matchKey = scenario.irMatchKey;
             var consolidationMode = scenario.consolidationMode;
             var consolidationSortKeys = scenario.consolidationSortKeys ?? defaultConsolidationSortKeys;
+            let flowSortKeys = scenario.sortKeysFlow ?? defaultFlowSortKeys;
             var inputDataStart = scenario.steps[startStepIdx].data;
             var uidMode = currentUIDMode;
 
-            var idKeyRaw = 'id';
-            var idKeyClust = 'UID';
-            var idKeyConsIndv = 'UID';
+            let idKeyRaw = 'id';
+            let idKeyClust = 'UID';
+            let idKeyConsIndv = 'UID';
+            let idKeyFlow = 'id';
 
             // compute all the data - cluster data, consolidate data
-            var computedDataStart = crteateDataFromScenarioRawData(inputDataStart, matchKey, consolidationMode, consolidationSortKeys, uidMode);
+            var computedDataStart = crteateDataFromScenarioRawData(inputDataStart, matchKey, consolidationMode, consolidationSortKeys, uidMode, flowSortKeys);
             var finalData = computedDataStart;
 
             if(scenario.steps.length > 1)
             {
                 var inputDataFinish = scenario.steps[finishStepIdx].data;
-                var computedDataFinish = crteateDataFromScenarioRawData(inputDataFinish, matchKey, consolidationMode, consolidationSortKeys, uidMode);
+                var computedDataFinish = crteateDataFromScenarioRawData(inputDataFinish, matchKey, consolidationMode, consolidationSortKeys, uidMode, flowSortKeys);
 
                 dataCalculateArrayDeltas(computedDataStart.dataRaw, computedDataFinish.dataRaw, idKeyRaw);
                 dataCalculateArrayDeltas(computedDataStart.dataClusters, computedDataFinish.dataClusters, idKeyClust)
                 dataCalculateArrayDeltas(computedDataStart.dataConsolidatedIndv, computedDataFinish.dataConsolidatedIndv, idKeyConsIndv);
+                dataCalculateArrayDeltas(computedDataStart.dataFlow, computedDataFinish.dataFlow, idKeyFlow);
 
                 // calculate deltas for each individual cluster
                 for(var idxA in computedDataStart.dataClusters)
