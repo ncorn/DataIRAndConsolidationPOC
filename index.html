@@ -188,10 +188,13 @@
         <script src="Classes.js"></script>
 
         <script lang="javascript">
-            var showDeltas = true;
             var scenarios = [];
             var defaultScenario = 0;
+
+            // Visual Controls
             var highLightDiffs = true;
+            var showDeltas = true;
+            var showColors = true;
 
             var colors = [
                 'ffdbd9',
@@ -268,6 +271,7 @@
                 <option></option>
             </select>
             <label>Highlight Deltas: </label><input type="checkbox" id="chkHighlightDeltas" checked="true" />
+            <label>Show Colors: </label><input type="checkbox" id="chkShowColors" checked="true" />
             <label>UID Mode: </label>
             <select id="selUIDMode">
                 <option value="Member">Cluster Member Mode</option>
@@ -343,6 +347,14 @@
 
         highLightDiffsChk.change(function(){
             highLightDiffs = this.checked;
+
+            uiRenderCurrentSelections();
+        });
+
+        var showColorsChk = $('#chkShowColors');
+
+        showColorsChk.change(function(){
+            showColors = this.checked;
 
             uiRenderCurrentSelections();
         });
@@ -710,7 +722,12 @@
 
                 if(showRank)
                 {
-                    row.append('<td class="cellData" style="background-color: #' + curDataColor + '">' + rank + '</td>');
+                    let rankCell = row.append('<td class="cellData">' + rank + '</td>');
+
+                    if(showColors)
+                    {
+                        rankCell.css('background-color', curDataColor);
+                    }
                 }
 
                 for(var masterKey in masterObj)
@@ -731,8 +748,13 @@
                             tmpCellColor = curData.colorMap[masterKey] ?? tmpCellColor;
                         }
 
-                        var outDataCell = $('<td class="cellData" style="background-color: #' + tmpCellColor + '"></td>');
+                        var outDataCell = $('<td class="cellData"></td>');
                         row.append(outDataCell);
+
+                        if(showColors)
+                        {
+                            outDataCell.css('background-color', tmpCellColor);
+                        }
 
 
                         if(Array.isArray(curVal))
