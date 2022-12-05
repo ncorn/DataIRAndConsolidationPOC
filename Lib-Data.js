@@ -263,17 +263,6 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
     return output;
 }
 
-function dataGetConsentFromCluster(objCluster, ContactPointEmailId)
-{
-        // Get the last updated one
-        dataSortObjArrayByKeys(ucpIndvs, [ { key: '_last_updated', direction: 'desc' } ]);
-        //let mostRecentIndv = ucpIndvs[0];
-    //}
-
-    // Return its consent (if any)
-    //return ucpIndivIds[0]..
-}
-
 function dataGetDistinctListForProperty(objArray, key)
 {
     let retData = new Set();
