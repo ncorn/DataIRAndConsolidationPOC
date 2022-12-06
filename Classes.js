@@ -1,8 +1,10 @@
 class Cluster
 {
-    constructor(indvArray, irMatchKey, uidMode)
+    constructor(indvArray, irMatchKey, uidMode, consolidationMode, consolidationSortKeys)
     {
         this.uidMode = uidMode;
+        this.consolidationMode = consolidationMode;
+        this.consolidationSortKeys = consolidationSortKeys;
         this.matchValue = indvArray[0][irMatchKey];
         this.clusterId = hashString(indvArray[0][irMatchKey]);
         this.individuals = indvArray;
@@ -10,17 +12,19 @@ class Cluster
         this.delta = 'unchanged';
 
         this.generateClusteredContactPoints();
+
+        this.UID = this.getUnifiedIndividual().UID;
     }
 
-    getUnifiedIndividual(uidMode, consolidationMode, consolidationSortKeys)
+    getUnifiedIndividual()
     {
-        let tmpReconciledIndv = this.getReconciledAttributes(consolidationMode, consolidationSortKeys);
+        let tmpReconciledIndv = this.getReconciledAttributes(this.consolidationMode, this.consolidationSortKeys);
 
-        if(uidMode == 'Cluster')
+        if(this.uidMode == 'Cluster')
         {
-            tmpReconciledIndv.UID = clst.clusterId;
+            tmpReconciledIndv.UID = this.clusterId;
         }
-        else if(uidMode == 'Member')
+        else if(this.uidMode == 'Member')
         {
             tmpReconciledIndv.UID = tmpReconciledIndv.id;
         }
@@ -229,5 +233,43 @@ class UnifiedContactPoint
         })
 
         return doesContain;
+    }
+}
+
+class Individual
+{
+    constructor(sourceObj)
+    {
+        this._created_date = '2022-01-01';
+
+        // transfer all the properties
+        for(let propIdx in sourceObj)
+        {
+            this[propIdx] = sourceObj[propIdx];
+        }
+
+        if(this.ContactPointEmail === undefined)
+        {
+            let defaultEmailCP = new ContactPointEmail('Email-' + this.id, this.Email, null, this.createdDate);
+            defaultEmailCP.EmailAddress = this.Email;
+
+            this.ContactPointEmail = [];
+            this.ContactPointEmail.push(defaultEmailCP);
+        }
+    }
+}
+
+class ContactPointEmail
+{
+    constructor(emailId, emailAddress, dataSource, createdDate)
+    {
+        let defaultSource = 'Default';
+        let defaultCD = '2022-01-01';
+
+        this.ContactPointEmailId = emailId ?? hashString(emailAddress);
+        this.emailAddress = emailAddress;
+        this.DataSource = dataSource ?? defaultSource;
+        this.createdDate = createdDate ?? defaultCD;
+        this.Consent = [];
     }
 }

@@ -161,9 +161,17 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
     // get the raw data
     var stepRawData = deepClone(data);
 
+    let stepConvertedData = [];
+
+    for(let indvIdx in data)
+    {
+        let curIndv = data[indvIdx];
+        stepConvertedData.push(new Individual(curIndv));
+    }
+
     // get data sorted by match key
-    var stepSortedData = deepClone(data);
-    dataSortObjArrayByKeys(stepSortedData, [{key: irMatchKey, direction:'asc'}]);
+    //var stepSortedData = deepClone(data);
+    dataSortObjArrayByKeys(stepConvertedData, [{key: irMatchKey, direction:'asc'}]);
 
     // Normalize all the consent values
     //dataCollapseConsent(stepSortedData);
@@ -171,12 +179,12 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
     // cluster the data (IR)
     // break data apart by match key
     var clusters = [];
-    let tmpClusterIndividuals = dataShardObjectArrayByKey(stepSortedData, irMatchKey);
+    let tmpClusterIndividuals = dataShardObjectArrayByKey(stepConvertedData, irMatchKey);
 
     for(let idvClstIdx in tmpClusterIndividuals)
     {
         let curIndividuals = tmpClusterIndividuals[idvClstIdx];
-        let newCluster = new Cluster(curIndividuals, irMatchKey);
+        let newCluster = new Cluster(curIndividuals, irMatchKey, uidMode, consolidationMode, consolidationSortKeys);
         clusters.push(newCluster);
     }
 
@@ -187,7 +195,7 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
     for(let idx in clusters)
     {
         let clst = clusters[idx];
-        let curConsIndv = clst.getUnifiedIndividual(uidMode, consolidationMode, consolidationSortKeys);
+        let curConsIndv = clst.getUnifiedIndividual();
 
         consolidatedIndividuals.push(curConsIndv);
 
@@ -254,7 +262,7 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
 
     var output = {
         dataRaw: stepRawData,
-        dataMatchSorted: stepSortedData,
+        dataMatchSorted: stepConvertedData,
         dataClusters: clusters,
         dataConsolidatedIndv: consolidatedIndividuals,
         dataFlow: flowData
