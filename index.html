@@ -812,7 +812,7 @@
             var uidMode = currentUIDMode;
 
             let idKeyRaw = 'id';
-            let idKeyClust = 'UID';
+            let idKeyClust = 'clusterId';
             let idKeyConsIndv = 'UID';
             let idKeyFlow = 'id';
 
@@ -881,7 +881,7 @@
 
                 if(outputStep == 'merged')
                 {
-                    finalData = dataCombineDataIterations(computedDataStart, computedDataFinish, idKeyRaw, idKeyClust, idKeyConsIndv);
+                    finalData = dataCombineDataIterations(computedDataStart, computedDataFinish, idKeyRaw, idKeyClust, idKeyConsIndv, idKeyFlow);
                 }
             }
 
