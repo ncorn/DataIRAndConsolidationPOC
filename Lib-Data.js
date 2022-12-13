@@ -472,7 +472,7 @@ function getCompleteProperties(arrayData, excludedKeys)
     return masterObj;
 }
 
-function dataCombineDataIterations(dataIterationOne, dataIterationTwo, idKeyRawData, idKeyClusterData, idKeyConsolidatedIndividuals, uidMode)
+function dataCombineDataIterations(dataIterationOne, dataIterationTwo, idKeyRawData, idKeyClusterData, idKeyConsolidatedIndividuals, idKeyFlow)
 {
     var output = {
         dataRaw: deepClone(dataIterationOne.dataRaw),
@@ -538,6 +538,7 @@ function dataCombineDataIterations(dataIterationOne, dataIterationTwo, idKeyRawD
     dataDeduplicateObjectArray(output.dataRaw, idKeyRawData);
     //dataDeduplicateObjectArray(output.dataClusters, idKeyClusterData);
     dataDeduplicateObjectArray(output.dataConsolidatedIndv, idKeyConsolidatedIndividuals);
+    dataDeduplicateObjectArray(output.dataFlow, idKeyFlow);
 
     return output;
 }
@@ -567,3 +568,107 @@ function dataDeduplicateObjectArray(data, dedupKey)
         }
     }
 }
+
+function dataFilterObjectArray(objArray, filters)
+{
+    let ret = [];
+
+    for(let idx in objArray)
+    {
+        let curObj = objArray[idx];
+        let isIncluded = true;
+
+        for(let filterIdx in filters)
+        {
+            let curFilter = filters[filterIdx];
+            let curFilterData = curObj[curFilter.key];
+            let curFilterValue = curFilter.value;
+
+            switch(curFilter.operator)
+            {
+                case '=':
+                    isIncluded = (curFilterData == curFilterValue);
+                    break;
+                case '<':
+                    isIncluded = (curFilterData < curFilterValue);
+                    break;
+                case '>':
+                    isIncluded = (curFilterData > curFilterValue);
+                    break;
+            }
+
+            if(!isIncluded)
+            {
+                break;
+            }
+        }
+
+        if(isIncluded)
+        {
+            ret.push(curObj);
+        }
+    }
+
+    return ret;
+}
+
+/*
+function dataGetDenormalizedObject(object, path)
+{
+    let ret = [];
+    let propPath = path.split('.');
+    let newPath = '';
+
+    let curProp = propPath[0];
+    let curObj = object[curProp];
+
+    let curPropArray = [];
+
+    if(Array.isArray(curObj))
+    {
+        for(let idx in curObj)
+        {
+            let curArrayObj = curObj[idx];
+
+            if(propPath.length == 1)
+            {
+                curPropArray.push(curArrayObj);
+            }
+            else
+            {
+                curPropArray = dataGetDenormalizedObject(curObj, newPath);
+            }
+        }
+    }
+    else if(typeof object == 'object')
+    {
+        if(propPath.length == 1)
+        {
+            curPropArray.push(curObj);
+        }
+        else
+        {
+            curPropArray = dataGetDenormalizedObject(curObj, newPath);
+        }
+    }
+    else
+    {
+
+    }
+
+    for(let idx in curPropArray)
+    {
+        let nestedObj = curPropArray[idx];
+        let mergedObj = dataMergeObjects(curObj, nestedObj);
+
+        ret.push(mergedObj);
+    }
+
+    return ret;
+}
+
+function dataMergeObjects(obj1, obj2, excludedKeys)
+{
+
+}
+*/

@@ -170,6 +170,7 @@ class Cluster
                     {
                         color: curIdv.color,
                         id: curIdv.id,
+                        UID: this.UID,
                         _object_type: curIdv._object_type,
                         _created_date: curIdv._created_date,
                         ContactPointEmailId: null,
@@ -188,6 +189,7 @@ class Cluster
                     {
                         color: curIdv.color,
                         id: curIdv.id,
+                        UID: this.UID,
                         _object_type: curIdv._object_type,
                         _created_date: curIdv._created_date,
                         ContactPointEmailId: curCP.ContactPointEmailId,
@@ -199,6 +201,115 @@ class Cluster
         }
 
         return tmpRet;
+    }
+
+    getCollapsedConsent()
+    {
+        let ret = [];
+
+        for(let i = 0; i < this.individuals.length; i++)
+        {
+            let curIndv = this.individuals[i];
+
+            // L1 - Party Consent
+            if(curIndv.PartyConsent !== undefined)
+            {
+                for(let ii = 0; ii < curIndv.PartyConsent.length; ii++)
+                {
+                    let curPartyConsent = curIndv.PartyConsent[ii];
+
+                    ret.push({
+                        Level: 'L1',
+                        IndividualId: curIndv.id,
+                        ContactPoint: null,
+                        ConsentStatus: curPartyConsent.consent_status,
+                        EngagementChannelType: null,
+                        DataUsePurpose: null,
+                        Brand: null
+                    });
+                }
+            }
+
+            // L2 - Engagement Channel Consent
+            if(curIndv.EngagementChannelTypeConsent !== undefined)
+            {
+                for(let ii = 0; ii < curIndv.EngagementChannelTypeConsent.length; ii++)
+                {
+                    let curChannelConsent = curIndv.EngagementChannelTypeConsent[ii];
+
+                    ret.push({
+                        Level: 'L2',
+                        IndividualId: curIndv.id,
+                        ContactPoint: null,
+                        ConsentStatus: curChannelConsent.consent_status,
+                        EngagementChannelType: curChannelConsent.channel,
+                        DataUsePurpose: curChannelConsent.DataUsePurpose ?? null,
+                        Brand: null
+                    });
+                }
+            }
+
+            // L3 - Contact Point Consent
+            if(curIndv.ContactPointEmail !== undefined)
+            {
+                for(let ii = 0; ii < curIndv.ContactPointEmail.length; ii++)
+                {
+                    let curContactPoint = curIndv.ContactPointEmail[ii];
+
+                    for(let iii = 0; iii < curContactPoint.Consent.length; iii++)
+                    {
+                        let curCPConsent = curContactPoint.Consent[iii];
+        
+                        ret.push({
+                            Level: 'L3',
+                            IndividualId: curIndv.id,
+                            ContactPoint: curContactPoint.ContactPointEmailId,
+                            ConsentStatus: curCPConsent.consent_status,
+                            EngagementChannelType: null,
+                            DataUsePurpose: curCPConsent.DataUsePurpose ?? null,
+                            Brand: null
+                        });
+                    }
+                }
+
+            }
+
+            // L4 - Communication Subscription Consent
+        }
+
+        dataSortObjArrayByKeys(ret, [{key: 'Level', direction: 'asc'},{key: 'ContactPoint', direction: 'asc'}]);
+
+        return ret;
+    }
+
+    getContactPointEmailByIds(cpEmailIDArray)
+    {
+        let ret = [];
+
+        for(let idx in cpEmailIDArray)
+        {
+            ret.push(this.getContactPointEmailById(cpEmailIDArray[idx]));
+        }
+
+        return ret;
+    }
+
+    getContactPointEmailById(cpEmailId)
+    {
+        for(let idvIdx in this.individuals)
+        {
+            let curIndividual = this.individuals[idvIdx];
+
+            for(let cpEmailIdx in curIndividual.ContactPointEmail)
+            {
+                let curCPEmail = curIndividual.ContactPointEmail[cpEmailIdx];
+
+                if(curCPEmail.ContactPointEmailId == cpEmailId)
+                {
+                    return curCPEmail;
+                }
+            }
+        }
     }
 }
 
@@ -271,5 +382,58 @@ class ContactPointEmail
         this.DataSource = dataSource ?? defaultSource;
         this.createdDate = createdDate ?? defaultCD;
         this.Consent = [];
+    }
+}
+
+class ActivationEngine{
+    constructor()
+    {
+        this.filterCPEmail = [
+            {
+                key: 'ConsentStatus',
+                operator: '=',
+                value: 'Opt In',
+            },
+            {
+                key: 'Level',
+                operator: '=',
+                value: 'L3',
+            }
+        ];
+        this.filterIndividuals = [
+            {
+                key: 'ConsentStatus',
+                operator: '=',
+                value: 'Opt In',
+            }
+        ];
+        this.sortCPEmail = [
+            { key:'DataSource', direction:'asc'},
+            { key:'LastCaptureDate', direction:'dsc'}
+        ]
+    }
+
+    generateActivatedData(clusterArray)
+    {
+        let ret = [];
+
+        for(let idx in clusterArray)
+        {
+            let curCluster = clusterArray[idx];
+
+            let collapsedConsent = curCluster.getCollapsedConsent();
+
+            let filteredConsent = dataFilterObjectArray(collapsedConsent, this.filterCPEmail);
+            let individualIds = dataGetDistinctListForProperty(filteredConsent, 'IndividualId');
+            let cpIDs = dataGetDistinctListForProperty(filteredConsent, 'ContactPoint');
+            let cpEmails = curCluster.getContactPointEmailByIds(cpIDs);
+            let individuals = curCluster.getIndvsById(individualIds);
+
+            dataSortObjArrayByKeys(cpEmails, this.sortCPEmail);
+
+            ret = ret.concat(individuals);
+        }
+
+        return ret;
     }
 }

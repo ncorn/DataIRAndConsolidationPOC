@@ -295,6 +295,8 @@
         <div class="outContainer" id="outConsolidatedData"></div>
         <h1>Flow Dataset</h1>
         <div class="outContainer" id="outFlowDataset"></div>
+        <h1>Activation Dataset</h1>
+        <div class="outContainer" id="outActivationDataset"></div>
     </body>
     <script lang="javascript">
         var currentscenarioIdx = defaultScenario;
@@ -578,6 +580,8 @@
                 let curCluster = dataObj.dataClusters[idx];
                 let tmpIndividuals = deepClone(curCluster.individuals);
                 let tmpCPEmail = deepClone(curCluster.UnifiedContactPointEmail);
+                let tmpCollapsedConsentEmail = curCluster.getCollapsedConsent();
+
                 dataSortObjArrayByKeys(tmpIndividuals, consolidationSortKeys);
 
                 let clusterContainer = $('<div class="cluster"></div>');
@@ -610,10 +614,19 @@
                     let tblEmailClusters = outputTableFromObjectArray(tmpCPEmail, null, true, false);
 
                     clusterContainer.append(tblEmailClusters);
+
+                    let tblCollapsedConsentEmail = outputTableFromObjectArray(tmpCollapsedConsentEmail, null, false, false);
+                    clusterContainer.append(tblCollapsedConsentEmail);
                 }
 
                 $('#outGroupedData').append(clusterContainer);
             }
+
+            let activationEngine = new ActivationEngine();
+            let consentedEmailCP = activationEngine.generateActivatedData(dataObj.dataClusters);
+
+            outputTableFromObjectArray(consentedEmailCP, 'outActivationDataset', false, false);
+
         }
 
         function outputTableFromObjectArray(arrayData, outContainerID, append, showRank)
@@ -884,6 +897,8 @@
                     finalData = dataCombineDataIterations(computedDataStart, computedDataFinish, idKeyRaw, idKeyClust, idKeyConsIndv, idKeyFlow);
                 }
             }
+
+            let contactPoints = 
 
             outputTablesForEachDataType(finalData, scenario.consolidationSortKeys);
         }
