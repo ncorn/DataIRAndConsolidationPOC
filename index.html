@@ -651,6 +651,11 @@
                 return;
             }
 
+            if(arrayData.length == 0)
+            {
+                return;
+            }
+
             var outTable = $('<table class="dataOutput"></table>');
             var excludedKeys = [ 'color', 'colorMap', 'isUnifiedIndv' ];
 
