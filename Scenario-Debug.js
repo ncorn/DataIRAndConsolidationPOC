@@ -3,6 +3,8 @@ scenarios.push({
     title: 'Debugging',
     consolidationMode: 'PickAWinner',
     irMatchKey: 'Email',
+    Group: 'Debug',
+    GroupOrder: 100,
     consolidationSortKeys: 
     [  
         { key: '_object_type', direction: 'asc'}, 

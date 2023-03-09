@@ -28,6 +28,8 @@ var _engagement_history5Sends = [
 scenarios.push({
     id: '_journey_history-Rekey',
     title: 'Journey History - Rekey',
+    Group: 'Journey History',
+    GroupOrder: 40,
     consolidationMode: 'PickAWinner',
     irMatchKey: 'Email',
     consolidationSortKeys: 
@@ -233,6 +235,8 @@ scenarios.push({
 scenarios.push({
     id: '_journey_history-Hop-Unmask-BeMasked',
     title: 'Journey History - Hop - Unmask:Be Masked',
+    Group: 'Journey History',
+    GroupOrder: 40,
     consolidationMode: 'PickAWinner',
     irMatchKey: 'Email',
     consolidationSortKeys: 
@@ -269,6 +273,8 @@ scenarios.push({
 scenarios.push({
     id: '_journey_history-Hop-Unmask-Masked',
     title: 'Journey History - Hop - Unmask:Mask',
+    Group: 'Journey History',
+    GroupOrder: 40,
     consolidationMode: 'PickAWinner',
     irMatchKey: 'Email',
     consolidationSortKeys: 
@@ -305,6 +311,8 @@ scenarios.push({
 scenarios.push({
     id: '_journey_history-Hop-Subtract-Mask',
     title: 'Journey History - Hop - Subtract:Mask',
+    Group: 'Journey History',
+    GroupOrder: 40,
     consolidationMode: 'PickAWinner',
     irMatchKey: 'Email',
     consolidationSortKeys: 
@@ -341,6 +349,8 @@ scenarios.push({
 scenarios.push({
     id: '_journey_history-Takeover',
     title: 'Journey History - Takeover',
+    Group: 'Journey History',
+    GroupOrder: 40,
     consolidationMode: 'PickAWinner',
     irMatchKey: 'Email',
     uidMode: 'Member',
@@ -375,6 +385,8 @@ scenarios.push({
 scenarios.push({
     id: '_journey_history-Succession',
     title: 'Journey History - Succession',
+    Group: 'Journey History',
+    GroupOrder: 40,
     consolidationMode: 'PickAWinner',
     irMatchKey: 'Email',
     uidMode: 'Member',

@@ -309,7 +309,10 @@
 
         var scenarioDD = $('#selScenario');
         
-        dataSortObjArrayByKeys(scenarios, [{ key: 'GroupOrder', direction: 'asc' }, { key: 'Title', direction: 'asc' }]);
+        /* ================= */
+        /* Sort and display all of the scenarios */
+        /* ================= */
+        dataSortObjArrayByKeys(scenarios, [{ key: 'GroupOrder', direction: 'asc' },{ key: 'Group', direction: 'asc' },{ key: 'Title', direction: 'asc' }]);
 
         let prevGroup = null;
         let curGroupNode = null;
@@ -318,7 +321,7 @@
         {
             var curScenario = scenarios[idx];
             var curTitlte = curScenario.title ?? idx;
-            var curGroup = curScenario.Group;
+            var curGroup = curScenario.Group ?? 'Ungrouped';
 
             if(prevGroup != curGroup || prevGroup === null)
             {
@@ -331,7 +334,7 @@
 
             scenarioDD.val(currentscenarioIdx);
 
-            prevGroup = curScenario.Group;
+            prevGroup = curGroup;
         }
         
         scenarioDD.change(function()

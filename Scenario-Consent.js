@@ -1,6 +1,8 @@
 scenarios.push({
     id:"Consent-1",
     title: 'Consent - Scenario 1',
+    Group: 'Consent',
+    GroupOrder: 30,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     sortKeysFlow: [  
@@ -135,6 +137,8 @@ scenarios.push({
 scenarios.push({
     id:"Consent-2",
     title: 'Consent - Scenario 2',
+    Group: 'Consent',
+    GroupOrder: 30,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     sortKeysFlow: [  
@@ -231,6 +235,8 @@ scenarios.push({
 scenarios.push({
     id:"Consent-3",
     title: 'Consent - Scenario 3',
+    Group: 'Consent',
+    GroupOrder: 30,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     sortKeysFlow: [  
@@ -329,6 +335,8 @@ scenarios.push({
 scenarios.push({
     id:"Consent-4",
     title: 'Consent - Scenario 4',
+    Group: 'Consent',
+    GroupOrder: 30,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     sortKeysFlow: [  
@@ -422,6 +430,8 @@ scenarios.push({
 scenarios.push({
     id:"Consent-11",
     title: 'Consent - Scenario 11',
+    Group: 'Consent',
+    GroupOrder: 30,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     sortKeysFlow: [  
