@@ -1,6 +1,10 @@
 <html>
     <head>
         <style>
+            .defaultHidden{
+                display: none;
+            }
+
             .dataOutput{
                 border-collapse: separate;
                 border: solid 1px #000000;
@@ -277,12 +281,6 @@
                 <option value="Member">Cluster Member Mode</option>
                 <option value="Cluster">Match Cluster Mode</option>
             </select>
-            <select id="selDeltaView" style="display: none;">
-                <option value="merged" selected="true">Merged</option>
-                <option value="start">Start</option>
-                <option value="finish">Finish</option>
-            </select>
-            <select id="selStepStart" style="display: none;"></select>
         </div>
         <div id="outSteps"></div>
         <h1 style="clear: both;">Raw Individuals</h1>
@@ -293,12 +291,12 @@
         <div class="outContainer" id="outGroupedData"></div>
         <h1>Reconciled Individuals</h1>
         <div class="outContainer" id="outConsolidatedData"></div>
-        <h1>Segmented Individuals</h1>
-        <div class="outContainer" id="outSegmentedData"></div>
+        <h1 class="elsSegmentedData defaultHidden">Segmented Individuals</h1>
+        <div class="outContainer elsSegmentedData defaultHidden" id="outSegmentedData"></div>
         <h1>Flow Dataset</h1>
         <div class="outContainer" id="outFlowDataset"></div>
-        <h1>Activation Dataset</h1>
-        <div class="outContainer" id="outActivationDataset"></div>
+        <h1 class="defaultHidden">Activation Dataset</h1>
+        <div class="outContainer defaultHidden" id="outActivationDataset"></div>
     </body>
     <script lang="javascript">
         var currentscenarioIdx = defaultScenario;
@@ -337,6 +335,9 @@
             prevGroup = curGroup;
         }
         
+        /* ================= */
+        /* Set up drop down handlers */
+        /* ================= */
         scenarioDD.change(function()
         {
             currentScenario = scenarios[this.value];
@@ -428,7 +429,6 @@
                 uidModeDD.val(currentUIDMode);
                 console.log(currentUIDMode);
 
-                populateStepDDByScenario(currentScenario);
                 outputStepUIScenario(currentScenario);
                 executePipeline(currentScenario, tmpCurScenarioStartStep, tmpCurScenarioStartStep + 1, currentView /*'merged' 'start' 'finish'*/);
             }
@@ -436,26 +436,6 @@
             {
                 var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname;
                 window.history.pushState({path: newurl}, '', newurl);
-            }
-        }
-
-        function populateStepDDByScenario(scenario)
-        {
-            if(scenario.steps.length <= 1)
-            {
-                stepDD.hide();
-            }
-            else
-            {
-                //stepDD.show();
-
-                for(var i = 0; i < scenario.steps.length; i++)
-                {
-                    var curOption = $('<option value="' + i + '">' + scenario.steps[i].title + '</option>');
-                    stepDD.append(curOption);
-                }
-
-                stepDD.val(currentScenarioSelectedStep);
             }
         }
 
@@ -577,14 +557,22 @@
         }
 
         function clear(){
-            var clearIDs = ['outRawData', 'outSortedData', 'outGroupedData', 'outConsolidatedData', 'outSteps', 'selStepStart', 'outSegmentedData', 'outActivationDataset' ];
+            var clearIDs = [
+                'outRawData', 
+                'outSortedData', 
+                'outGroupedData', 
+                'outConsolidatedData', 
+                'outSteps', 
+                'selStepStart', 
+                'outSegmentedData', 
+                'outActivationDataset' ];
 
             for(var idx in clearIDs)
             {
                 $('#' + clearIDs[idx]).empty();
             }
 
-            $('#selStepStart').hide();
+            $('.defaultHidden').hide();
         }
 
         function outputTablesForEachDataType(dataObj, consolidationSortKeys)
@@ -642,12 +630,17 @@
 
             //outputTableFromObjectArray(consentedEmailCP, 'outActivationDataset', false, false);
 
-            for(let idx in dataObj.dataSegments)
+            if(dataObj.dataSegments.length > 0)
             {
-                let curSegment = dataObj.dataSegments[idx];
-                let outSegmentData = $('#outSegmentedData');
-                let tblSegmentData = outputTableFromObjectArray(curSegment, null, true, false);
-                outSegmentData.append(tblSegmentData);
+                $('.elsSegmentedData').show();
+
+                for(let idx in dataObj.dataSegments)
+                {
+                    let curSegment = dataObj.dataSegments[idx];
+                    let outSegmentData = $('#outSegmentedData');
+                    let tblSegmentData = outputTableFromObjectArray(curSegment, null, true, false);
+                    outSegmentData.append(tblSegmentData);
+                }
             }
         }
 
@@ -855,11 +848,13 @@
             var computedDataStart = crteateDataFromScenarioRawData(inputDataStart, matchKey, consolidationMode, consolidationSortKeys, uidMode, flowSortKeys);
             var finalData = computedDataStart;
 
+            // Compute data for multiple steps
             if(scenario.steps.length > 1)
             {
                 var inputDataFinish = scenario.steps[finishStepIdx].data;
                 var computedDataFinish = crteateDataFromScenarioRawData(inputDataFinish, matchKey, consolidationMode, consolidationSortKeys, uidMode, flowSortKeys);
 
+                // Calculate all deltas between the first step and this one
                 dataCalculateArrayDeltas(computedDataStart.dataRaw, computedDataFinish.dataRaw, idKeyRaw);
                 dataCalculateArrayDeltas(computedDataStart.dataClusters, computedDataFinish.dataClusters, idKeyClust)
                 dataCalculateArrayDeltas(computedDataStart.dataConsolidatedIndv, computedDataFinish.dataConsolidatedIndv, idKeyConsIndv);
@@ -919,8 +914,6 @@
                     finalData = dataCombineDataIterations(computedDataStart, computedDataFinish, idKeyRaw, idKeyClust, idKeyConsIndv, idKeyFlow);
                 }
             }
-
-            let contactPoints = 
 
             outputTablesForEachDataType(finalData, scenario.consolidationSortKeys);
         }

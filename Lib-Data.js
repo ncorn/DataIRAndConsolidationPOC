@@ -210,7 +210,9 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
     == Segmentation
     =========================*/
     let segmentData = [];
+    let segmentCriteria = [];
 
+    /*
     let segmentCriteria = [
         {
             key: '_created_date',
@@ -218,9 +220,10 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
             value: '1984-07-30',
         }
     ];
+    */
     
-    let segmentUnifiedIndividuals = dataFilterObjectArray(unifiedAndReconciledIndividuals, segmentCriteria);
-    segmentData.push(segmentUnifiedIndividuals);
+    //let segmentUnifiedIndividuals = dataFilterObjectArray(unifiedAndReconciledIndividuals, segmentCriteria);
+    //segmentData.push(segmentUnifiedIndividuals);
 
     /*=========================
     == Flow
@@ -448,7 +451,8 @@ function dataCombineDataIterations(dataIterationOne, dataIterationTwo, idKeyRawD
         dataMatchSorted: deepClone(dataIterationOne.dataMatchSorted),
         dataClusters: deepClone(dataIterationOne.dataClusters),
         dataConsolidatedIndv: deepClone(dataIterationOne.dataConsolidatedIndv),
-        dataFlow: deepClone(dataIterationOne.dataFlow)
+        dataFlow: deepClone(dataIterationOne.dataFlow),
+        dataSegments: deepClone(dataIterationOne.dataSegments),
     };
 
     output.dataRaw = output.dataRaw.concat(deepClone(dataIterationTwo.dataRaw));
