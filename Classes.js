@@ -10,10 +10,20 @@ class Cluster
         this.individuals = indvArray;
         this.UnifiedContactPointEmail = [];
         this.delta = 'unchanged';
-
-        this.generateClusteredContactPoints();
-
         this.UID = this.getUnifiedIndividual().UID;
+    }
+
+    getComputedData()
+    {
+        return {
+            clusterId: this.clusterId,
+            UID: this.UID,
+            matchValue: this.matchValue,
+            individuals: deepClone(this.individuals),
+            unifiedContactPointsEmail: this.generateClusteredContactPoints(),
+            collapsedConsent: this.getCollapsedConsent(),
+            delta: 'unchanged'
+        }
     }
 
     getUnifiedIndividual()
@@ -36,9 +46,11 @@ class Cluster
 
     getUnifiedEmailClusterByCPEmailId(ContactPointEmailId)
     {
-        for(let unCPIdx in this.UnifiedContactPointEmail)
+        let unifiedCPEmail = this.generateClusteredContactPoints();
+
+        for(let unCPIdx in unifiedCPEmail)
         {
-            let curUCP = this.UnifiedContactPointEmail[unCPIdx];
+            let curUCP = unifiedCPEmail[unCPIdx];
 
             if(curUCP.containsId(ContactPointEmailId))
             {
@@ -129,6 +141,7 @@ class Cluster
 
     generateClusteredContactPoints(){
         let tmpCPEmailFull = [];
+        let retCPEmailClustered = [];
 
         // collect all contact points
         for(let idxIndv in this.individuals)
@@ -152,8 +165,10 @@ class Cluster
             let curEmailCluster = emailClusters[idxEmailClst];
             let newEmailClst = new UnifiedContactPoint(curEmailCluster);
 
-            this.UnifiedContactPointEmail.push(newEmailClst);
+            retCPEmailClustered.push(newEmailClst);
         }
+
+        return retCPEmailClustered;
     }
 
     getDenormalizedContactPointEmails()
@@ -271,7 +286,6 @@ class Cluster
                         });
                     }
                 }
-
             }
 
             // L4 - Communication Subscription Consent

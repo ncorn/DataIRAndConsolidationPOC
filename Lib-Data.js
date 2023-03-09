@@ -20,7 +20,6 @@ function dataCalculateArrayDeltas(objGroupA, objGroupB, compareKey)
     dataSortObjArrayByKeys(objGroupB, sortConfig);
 
     var idxB = 0;
-    var isFirstB = true;
 
     for(var idxA in objGroupA)
     {
@@ -159,8 +158,7 @@ function hashString(str, seed = 0) {
 
 function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, consolidationSortKeys, uidMode, flowSortKeys){
     // get the raw data
-    var stepRawData = deepClone(data);
-
+    let stepRawData = deepClone(data);
     let stepConvertedData = [];
 
     for(let indvIdx in data)
@@ -169,16 +167,17 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
         stepConvertedData.push(new Individual(curIndv));
     }
 
+    /*=========================
+    == Identity Resolution
+    =========================*/
+
     // get data sorted by match key
     //var stepSortedData = deepClone(data);
     dataSortObjArrayByKeys(stepConvertedData, [{key: irMatchKey, direction:'asc'}]);
 
-    // Normalize all the consent values
-    //dataCollapseConsent(stepSortedData);
-
     // cluster the data (IR)
     // break data apart by match key
-    var clusters = [];
+    let clusters = [];
     let tmpClusterIndividuals = dataShardObjectArrayByKey(stepConvertedData, irMatchKey);
 
     for(let idvClstIdx in tmpClusterIndividuals)
@@ -188,16 +187,47 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
         clusters.push(newCluster);
     }
 
-    // Consolidate individuals in each cluster
-    var consolidatedIndividuals = new Array();
+    // Reconcile individuals in each cluster
+    let unifiedAndReconciledIndividuals = new Array();
+    let clusterOutputData = [];
     let flowData = [];
 
+    clusters.forEach(cluster => {
+        clusterOutputData.push(cluster.getComputedData());
+    });
+
+
+    /*=========================
+    == Reconciliation
+    =========================*/
+    
+    clusters.forEach(cluster => {
+        unifiedAndReconciledIndividuals.push(cluster.getUnifiedIndividual());
+    });
+    
+
+    /*=========================
+    == Segmentation
+    =========================*/
+    let segmentData = [];
+
+    let segmentCriteria = [
+        {
+            key: '_created_date',
+            operator: '>',
+            value: '1984-07-30',
+        }
+    ];
+    
+    let segmentUnifiedIndividuals = dataFilterObjectArray(unifiedAndReconciledIndividuals, segmentCriteria);
+    segmentData.push(segmentUnifiedIndividuals);
+
+    /*=========================
+    == Flow
+    =========================*/
     for(let idx in clusters)
     {
         let clst = clusters[idx];
-        let curConsIndv = clst.getUnifiedIndividual();
-
-        consolidatedIndividuals.push(curConsIndv);
 
         // Create a view for Flow
         // denormalize all individuals
@@ -205,6 +235,7 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
 
         if(tmpFlowData.length > 0)
         {
+            let curConsIndv = clst.getUnifiedIndividual();
             // Sort: Type -> Created Date (oldest) -> Email ID
             dataSortObjArrayByKeys(tmpFlowData, flowSortKeys);
             let selectedFlowObject = tmpFlowData[0];
@@ -260,12 +291,21 @@ function crteateDataFromScenarioRawData(data, irMatchKey, consolidationMode, con
         }
     }
 
+    /*=========================
+    == Activation
+    =========================*/
+
+    //let activationEngine = new ActivationEngine();
+    //let consentedEmailCP = activationEngine.generateActivatedData(dataObj.dataClusters);
+
+
     var output = {
         dataRaw: stepRawData,
         dataMatchSorted: stepConvertedData,
-        dataClusters: clusters,
-        dataConsolidatedIndv: consolidatedIndividuals,
-        dataFlow: flowData
+        dataClusters: clusterOutputData,
+        dataConsolidatedIndv: unifiedAndReconciledIndividuals,
+        dataFlow: flowData,
+        dataSegments: segmentData
     };
 
     return output;
@@ -321,77 +361,6 @@ function dataShardObjectArrayByKey(objArray, key)
     }
 
     return outShards;
-}
-
-function dataCollapseConsent(individuals)
-{
-    for(let i = 0; i < individuals.length; i++)
-    {
-        let curIndv = individuals[i];
-        curIndv.ConsentCollapsed = [];
-
-        // L1 - Party Consent
-        if(curIndv.PartyConsent !== undefined)
-        {
-            for(let ii = 0; ii < curIndv.PartyConsent.length; ii++)
-            {
-                let curPartyConsent = curIndv.PartyConsent[ii];
-
-                curIndv.ConsentCollapsed.push({
-                    Level: 'L1',
-                    ConsentStatus: curPartyConsent.consent_status,
-                    EngagementChannelType: null,
-                    ContactPoint: null,
-                    DataUsePurpose: null,
-                    Brand: null
-                });
-            }
-        }
-
-        // L2 - Engagement Channel Consent
-        if(curIndv.EngagementChannelTypeConsent !== undefined)
-        {
-            for(let ii = 0; ii < curIndv.EngagementChannelTypeConsent.length; ii++)
-            {
-                let curChannelConsent = curIndv.EngagementChannelTypeConsent[ii];
-
-                curIndv.ConsentCollapsed.push({
-                    Level: 'L2',
-                    ConsentStatus: curChannelConsent.consent_status,
-                    EngagementChannelType: curChannelConsent.channel,
-                    ContactPoint: null,
-                    DataUsePurpose: curChannelConsent.DataUsePurpose ?? null,
-                    Brand: null
-                });
-            }
-        }
-
-        // L3 - Contact Point Consent
-        if(curIndv.ContactPointEmail !== undefined)
-        {
-            for(let ii = 0; ii < curIndv.ContactPointEmail.length; ii++)
-            {
-                let curContactPoint = curIndv.ContactPointEmail[ii];
-
-                for(let iii = 0; iii < curContactPoint.Consent.length; iii++)
-                {
-                    let curCPConsent = curContactPoint.Consent[iii];
-    
-                    curIndv.ConsentCollapsed.push({
-                        Level: 'L3',
-                        ConsentStatus: curCPConsent.consent_status,
-                        EngagementChannelType: null,
-                        ContactPoint: curContactPoint.ContactPointEmailId,
-                        DataUsePurpose: curCPConsent.DataUsePurpose ?? null,
-                        Brand: null
-                    });
-                }
-            }
-
-        }
-
-        // L4 - Communication Subscription Consent
-    }
 }
 
 function dataSortObjArrayByKeys(objArray, sortKeys)

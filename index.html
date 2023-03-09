@@ -289,10 +289,12 @@
         <div class="outContainer" id="outRawData"></div>
         <h1 style="display: none;">Match Key Sorted Individuals</h1>
         <div style="display: none;" class="outContainer" id="outSortedData"></div>
-        <h1>Consolidated Individuals</h1>
+        <h1>Clustered Individuals</h1>
         <div class="outContainer" id="outGroupedData"></div>
-        <h1>Unified Individuals</h1>
+        <h1>Reconciled Individuals</h1>
         <div class="outContainer" id="outConsolidatedData"></div>
+        <h1>Segmented Individuals</h1>
+        <div class="outContainer" id="outSegmentedData"></div>
         <h1>Flow Dataset</h1>
         <div class="outContainer" id="outFlowDataset"></div>
         <h1>Activation Dataset</h1>
@@ -307,15 +309,29 @@
 
         var scenarioDD = $('#selScenario');
         
+        dataSortObjArrayByKeys(scenarios, [{ key: 'GroupOrder', direction: 'asc' }, { key: 'Title', direction: 'asc' }]);
+
+        let prevGroup = null;
+        let curGroupNode = null;
+
         for(var idx in scenarios)
         {
             var curScenario = scenarios[idx];
             var curTitlte = curScenario.title ?? idx;
+            var curGroup = curScenario.Group;
 
-            var option = $('<option value="' + idx + '">' + curTitlte + '</option>');
-            scenarioDD.append(option);
+            if(prevGroup != curGroup || prevGroup === null)
+            {
+                curGroupNode = $('<optgroup label="' + curGroup + '"></optGroup>');
+            }
+
+            let option = $('<option value="' + idx + '">' + curTitlte + '</option>');
+            curGroupNode.append(option);
+            scenarioDD.append(curGroupNode);
 
             scenarioDD.val(currentscenarioIdx);
+
+            prevGroup = curScenario.Group;
         }
         
         scenarioDD.change(function()
@@ -558,7 +574,7 @@
         }
 
         function clear(){
-            var clearIDs = ['outRawData', 'outSortedData', 'outGroupedData', 'outConsolidatedData', 'outSteps', 'selStepStart'];
+            var clearIDs = ['outRawData', 'outSortedData', 'outGroupedData', 'outConsolidatedData', 'outSteps', 'selStepStart', 'outSegmentedData', 'outActivationDataset' ];
 
             for(var idx in clearIDs)
             {
@@ -579,8 +595,7 @@
             {
                 let curCluster = dataObj.dataClusters[idx];
                 let tmpIndividuals = deepClone(curCluster.individuals);
-                let tmpCPEmail = deepClone(curCluster.UnifiedContactPointEmail);
-                let tmpCollapsedConsentEmail = curCluster.getCollapsedConsent();
+                let tmpCPEmail = deepClone(curCluster.unifiedContactPointsEmail);
 
                 dataSortObjArrayByKeys(tmpIndividuals, consolidationSortKeys);
 
@@ -615,18 +630,22 @@
 
                     clusterContainer.append(tblEmailClusters);
 
-                    let tblCollapsedConsentEmail = outputTableFromObjectArray(tmpCollapsedConsentEmail, null, false, false);
+                    let tblCollapsedConsentEmail = outputTableFromObjectArray(curCluster.collapsedConsent, null, false, false);
                     clusterContainer.append(tblCollapsedConsentEmail);
                 }
 
                 $('#outGroupedData').append(clusterContainer);
             }
 
-            let activationEngine = new ActivationEngine();
-            let consentedEmailCP = activationEngine.generateActivatedData(dataObj.dataClusters);
+            //outputTableFromObjectArray(consentedEmailCP, 'outActivationDataset', false, false);
 
-            outputTableFromObjectArray(consentedEmailCP, 'outActivationDataset', false, false);
-
+            for(let idx in dataObj.dataSegments)
+            {
+                let curSegment = dataObj.dataSegments[idx];
+                let outSegmentData = $('#outSegmentedData');
+                let tblSegmentData = outputTableFromObjectArray(curSegment, null, true, false);
+                outSegmentData.append(tblSegmentData);
+            }
         }
 
         function outputTableFromObjectArray(arrayData, outContainerID, append, showRank)

@@ -1,6 +1,8 @@
 scenarios.push({
     id: "DataUnification-Mixing",
     title: 'Data Unification - Mixing - Shared Email - Family',
+    Group: 'Reconciliation',
+    GroupOrder: 1,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
@@ -22,6 +24,8 @@ scenarios.push({
 scenarios.push({
     id: "DataUnification-Mixing-SharedEmail-Team",
     title: 'Data Unification - Mixing - Shared Email - Team',
+    Group: 'Reconciliation',
+    GroupOrder: 1,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
@@ -43,6 +47,8 @@ scenarios.push({
 scenarios.push({
     id: "DataUnification-Mixing-UnverifiedEmail",
     title: 'Data Unification - Mixing - Unverified Email',
+    Group: 'Reconciliation',
+    GroupOrder: 1,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
@@ -71,6 +77,8 @@ scenarios.push({
 scenarios.push({
     id: "DataUnification-Mixing-UnverifiedEmail-Malicious",
     title: 'Data Unification - Mixing - Unverified Email - Malicious',
+    Group: 'Reconciliation',
+    GroupOrder: 1,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
@@ -98,6 +106,8 @@ scenarios.push({
 scenarios.push({
     id: "DataUnification-PickAWinner-SharedEmail-Team",
     title: 'Data Unification - Pick A Winner - Shared Email - Team',
+    Group: 'Reconciliation',
+    GroupOrder: 1,
     consolidationMode: 'PickAWinner',
     irMatchKey: 'Email',
     steps: 
@@ -120,6 +130,8 @@ scenarios.push({
 scenarios.push({
     id: "DataUnification-Duplicates",
     title: 'Data Unification - Duplicates',
+    Group: 'Reconciliation',
+    GroupOrder: 1,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
@@ -140,6 +152,8 @@ scenarios.push({
 scenarios.push({
     id: "DataUnification-Masking",
     title: 'Data Unification - Masking - Name Update',
+    Group: 'Reconciliation',
+    GroupOrder: 1,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
@@ -177,6 +191,8 @@ scenarios.push({
 scenarios.push({
     id: "DataUnification-Masking-DeadName",
     title: 'Data Unification - Masking - Dead Name',
+    Group: 'Reconciliation',
+    GroupOrder: 1,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
@@ -205,6 +221,8 @@ scenarios.push({
 scenarios.push({
     id: "DataUnification-Masking-Numeric",
     title: 'Data Unification - Masking - Numeric Values',
+    Group: 'Reconciliation',
+    GroupOrder: 1,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
@@ -225,6 +243,8 @@ scenarios.push({
 scenarios.push({
     id: "DataUnification-NonOverlappingData",
     title: 'Data Unification - Non-Overlapping Data',
+    Group: 'Reconciliation',
+    GroupOrder: 1,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
@@ -247,6 +267,8 @@ scenarios.push({
 scenarios.push({
     id: "DataUnification-Masking-Profiles",
     title: 'Data Unification - Masking - Shared Email - Kid\'s Profiles',
+    Group: 'Reconciliation',
+    GroupOrder: 1,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
