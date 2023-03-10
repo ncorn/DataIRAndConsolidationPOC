@@ -1,6 +1,8 @@
 scenarios.push({
     id: 'IDGenClusterValue-Transform',
     title: 'IR - Cluster ID Gen - Transform',
+    Group: 'Identity Resolution',
+    GroupOrder: 0,
     uidMode: 'Cluster',
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
@@ -28,6 +30,8 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-AddSubtract',
     title: 'IR - Cluster ID Gen - Add/Subtract',
+    Group: 'Identity Resolution',
+    GroupOrder: 0,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
@@ -73,6 +77,8 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Rekey',
     title: 'IR - Cluster ID Gen - Rekey',
+    Group: 'Identity Resolution',
+    GroupOrder: 0,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
@@ -124,6 +130,8 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Succession',
     title: 'IR - Cluster ID Gen - Succession',
+    Group: 'Identity Resolution',
+    GroupOrder: 0,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
@@ -172,6 +180,8 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Succession-Update',
     title: 'IR - Cluster ID Gen - Split:Subtract-Add',
+    Group: 'Identity Resolution',
+    GroupOrder: 0,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
@@ -222,6 +232,8 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Split-Succession-Add',
     title: 'IR - Cluster ID Gen - Split:Succession-Add',
+    Group: 'Identity Resolution',
+    GroupOrder: 0,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
@@ -262,6 +274,8 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Takeover',
     title: 'IR - Cluster ID Gen - Takeover',
+    Group: 'Identity Resolution',
+    GroupOrder: 0,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
@@ -322,6 +336,8 @@ scenarios.push({
 scenarios.push({
     id: 'IDGenClusterValue-Hop',
     title: 'IR - Cluster ID Gen - Hop',
+    Group: 'Identity Resolution',
+    GroupOrder: 0,
     consolidationMode: 'Consolidate',
     irMatchKey: 'Email',
     steps: 
